@@ -23,3 +23,6 @@ julia> Spell_Out(12)
 julia> Spell_Out(100)
 "One Hundred"
 ```
+
+[code-style-img]: https://img.shields.io/badge/code%20style-blue-4495d1.svg
+[code-style-url]: https://github.com/invenia/BlueStyle
