@@ -1,6 +1,6 @@
-# module SpelledOut
-#
-# export spelled_out
+module SpelledOut
+
+export spelled_out
 
 const _small_numbers = String[
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
@@ -14,14 +14,7 @@ const _scale_numbers = String[ "",
     "sexdecillion", "septendecillion", "octodecillion", "novemdecillion", "vigintillion"]
     
 # convert a value < 100 to English.
-function __small_convert(number::Integer)::String
-    isnegative = false
-    if number < 0
-        isnegative = true
-    end
-    
-    number = abs(number)
-    
+function __small_convert(number::Integer; isnegative::Bool=false)::String
     if number < 20
         word = _small_numbers[number + 1]
         if isnegative
@@ -39,7 +32,6 @@ function __small_convert(number::Integer)::String
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
                 word = d_cap * "-" * _small_numbers[mod(number, 10) + 1]
-                
                 if isnegative
                     word = "negative " * word
                 end
@@ -59,14 +51,7 @@ end
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-function __big_convert(number::Integer)::String
-    isnegative = false
-    if number < 0
-        isnegative = true
-    end
-    
-    number = abs(number)
-    
+function __big_convert(number::Integer; isnegative::Bool=false)::String
     word = string() # initiate empty string
     divisor = div(number, 100)
     modulus = mod(number, 100)
@@ -90,12 +75,19 @@ function __big_convert(number::Integer)::String
 end
 
 function spelled_out(number::Integer)::String
+    number = big(number)
+    isnegative = false
+    if number < 0
+        isnegative = true
+    end
+    number = abs(number)
+    
     if number < 100
-        return __small_convert(number)
+        return __small_convert(number, isnegative=isnegative)
     end
     
     if number < 1000
-        return __big_convert(number)
+        return __big_convert(number, isnegative=isnegative)
     end
     
     v = 0
@@ -108,7 +100,7 @@ function spelled_out(number::Integer)::String
             # l = Int(round(number / mod))
             # r = Int(round(number - (l * mod)))
             l, r = divrem(number, mod)
-            ret = __big_convert(l) * " " * _scale_numbers[d_idx]
+            ret = __big_convert(l, isnegative=isnegative) * " " * _scale_numbers[d_idx + 1]
             
             if r > 0
                 ret = ret * ", " * spelled_out(r)
@@ -121,4 +113,4 @@ function spelled_out(number::Integer)::String
     end
 end
 
-# end # end module
+end # end module
