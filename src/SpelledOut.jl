@@ -7,14 +7,14 @@ const _small_numbers = String[
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
 const _tens = String[
     "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
-const _scale_numbers = String[ "",
+const _scale_numbers = String[
     "thousand",     "million",         "billion",       "trillion",       "quadrillion",
     "quintillion",  "sextillion",      "septillion",    "octillion",      "nonillion",
     "decillion",    "undecillion",     "duodecillion",  "tredecillion",   "quattuordecillion",
     "sexdecillion", "septendecillion", "octodecillion", "novemdecillion", "vigintillion"]
     
 # convert a value < 100 to English.
-function __small_convert(number::Integer; isnegative::Bool=false)::String
+function __small_convert(number::Integer; isnegative::Bool=false, british::Bool=false)::String
     if number < 20
         word = _small_numbers[number + 1]
         if isnegative
@@ -27,11 +27,14 @@ function __small_convert(number::Integer; isnegative::Bool=false)::String
     v = 1
     while v ≤ length(_tens)
         d_cap = _tens[v]
-        d_number = Int(20 + 10 * v)
+        d_number = BigInt(20 + 10 * v)
         
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
                 word = d_cap * "-" * _small_numbers[mod(number, 10) + 1]
+                # if british
+                #     word = "and " * word
+                # end
                 if isnegative
                     word = "negative " * word
                 end
@@ -42,6 +45,9 @@ function __small_convert(number::Integer; isnegative::Bool=false)::String
                 d_cap = "negative " * d_cap
             end
             
+            # if british
+            #     d_cap = "and " * d_cap
+            # end
             return d_cap
         end
         v += 1
@@ -51,7 +57,7 @@ end
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-function __big_convert(number::Integer; isnegative::Bool=false)::String
+function __big_convert(number::Integer; isnegative::Bool=false, british::Bool=false)::String
     word = string() # initiate empty string
     divisor = div(number, 100)
     modulus = mod(number, 100)
@@ -64,7 +70,7 @@ function __big_convert(number::Integer; isnegative::Bool=false)::String
     end
     
     if modulus > 0
-        word = word * __small_convert(modulus)
+        word = word * __small_convert(modulus, isnegative=isnegative, british=british)
     end
     
     if isnegative
@@ -74,33 +80,36 @@ function __big_convert(number::Integer; isnegative::Bool=false)::String
     return word
 end
 
-function spelled_out(number::Integer)::String
+function spelled_out(number::Integer; british::Bool=false)::String
     number = big(number)
     isnegative = false
     if number < 0
         isnegative = true
     end
     number = abs(number)
+    if number > big(1000000000000000000000000000000000000000000000000000000000000) - 1
+        throw(error("SpelledOut.jl does not support numbers larger than $(spelled_out(1000000000000000000000000000000000000000000000000000000000000 - 1)).  Sorry about that!"))
+    end
     
     if number < 100
-        return __small_convert(number, isnegative=isnegative)
+        return __small_convert(number, isnegative=isnegative, british=british)
     end
     
     if number < 1000
-        return __big_convert(number, isnegative=isnegative)
+        return __big_convert(number, isnegative=isnegative, british=british)
     end
     
     v = 0
     while v ≤ length(_scale_numbers)
-        d_idx = v - 1
-        d_number = Int(round(big(1000)^v))
+        d_idx = v
+        d_number = BigInt(round(big(1000)^v))
         
         if d_number > number
-            mod = Int(big(1000)^d_idx)
-            # l = Int(round(number / mod))
-            # r = Int(round(number - (l * mod)))
-            l, r = divrem(number, mod)
-            ret = __big_convert(l, isnegative=isnegative) * " " * _scale_numbers[d_idx + 1]
+            modulus = BigInt(big(1000)^(d_idx - 1))
+            # l = BigInt(round(number / mod))
+            # r = BigInt(round(number - (l * mod)))
+            l, r = divrem(number, modulus)
+            ret = __big_convert(l, isnegative=isnegative, british=british) * " " * _scale_numbers[d_idx - 1]
             
             if r > 0
                 ret = ret * ", " * spelled_out(r)
