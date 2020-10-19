@@ -14,12 +14,9 @@ const _scale_numbers = String[
     "sexdecillion", "septendecillion", "octodecillion", "novemdecillion", "vigintillion"]
     
 # convert a value < 100 to English.
-function __small_convert(number::Integer; isnegative::Bool=false, british::Bool=false)::String
+function __small_convert(number::Integer; british::Bool=false)::String
     if number < 20
         word = _small_numbers[number + 1]
-        if isnegative
-            word = "negative " * word
-        end
         
         return word
     end
@@ -32,22 +29,16 @@ function __small_convert(number::Integer; isnegative::Bool=false, british::Bool=
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
                 word = d_cap * "-" * _small_numbers[mod(number, 10) + 1]
-                # if british
-                #     word = "and " * word
-                # end
-                if isnegative
-                    word = "negative " * word
+                if british
+                    word = "and " * word
                 end
+                
                 return word
             end
             
-            if isnegative
-                d_cap = "negative " * d_cap
+            if british
+                d_cap = "and " * d_cap
             end
-            
-            # if british
-            #     d_cap = "and " * d_cap
-            # end
             return d_cap
         end
         v += 1
@@ -57,7 +48,7 @@ end
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-function __big_convert(number::Integer; isnegative::Bool=false, british::Bool=false)::String
+function __big_convert(number::Integer; british::Bool=false)::String
     word = string() # initiate empty string
     divisor = div(number, 100)
     modulus = mod(number, 100)
@@ -70,11 +61,7 @@ function __big_convert(number::Integer; isnegative::Bool=false, british::Bool=fa
     end
     
     if modulus > 0
-        word = word * __small_convert(modulus, isnegative=isnegative, british=british)
-    end
-    
-    if isnegative
-        word = "negative " * word
+        word = word * __small_convert(modulus, british=british)
     end
     
     return word
@@ -92,11 +79,23 @@ function spelled_out(number::Integer; british::Bool=false)::String
     end
     
     if number < 100
-        return __small_convert(number, isnegative=isnegative, british=british)
+        word = __small_convert(number, british=british)
+        
+        if isnegative
+            word = "negative " * word
+        end
+        
+        return word
     end
     
     if number < 1000
-        return __big_convert(number, isnegative=isnegative, british=british)
+        word = __big_convert(number, british=british)
+        
+        if isnegative
+            word = "negative " * word
+        end
+        
+        return word
     end
     
     v = 0
@@ -109,13 +108,17 @@ function spelled_out(number::Integer; british::Bool=false)::String
             # l = BigInt(round(number / mod))
             # r = BigInt(round(number - (l * mod)))
             l, r = divrem(number, modulus)
-            ret = __big_convert(l, isnegative=isnegative, british=british) * " " * _scale_numbers[d_idx - 1]
+            word = __big_convert(l, british=british) * " " * _scale_numbers[d_idx - 1]
             
             if r > 0
-                ret = ret * ", " * spelled_out(r)
+                word = word * ", " * spelled_out(r)
             end
             
-            return ret
+            if isnegative
+                word = "negative " * word
+            end
+            
+            return word
         end
         
         v += 1
