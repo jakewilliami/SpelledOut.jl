@@ -1,6 +1,6 @@
 module SpelledOut
 
-export spelled_out
+export spelled_out, Spelled_out, Spelled_Out
 
 const _small_numbers = String[
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
@@ -124,5 +124,8 @@ function spelled_out(number::Integer; british::Bool=false)::String
         v += 1
     end
 end
+
+Spelled_out(number::Integer; british::Bool=false)::String = uppercasefirst(spelled_out(number, british=british))
+Spelled_Out(number::Integer; british::Bool=false)::String = titlecase(spelled_out(number, british=british))
 
 end # end module

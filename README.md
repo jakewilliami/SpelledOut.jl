@@ -11,16 +11,16 @@ This is a minimal package for a pure Julia implementation of converting numbers 
 ## Examples
 
 ```julia
-julia> spell_out(12)
+julia> spelled_out(12)
 "twelve"
 
-julia> Spell_out(12)
+julia> Spelled_out(12)
 "Twelve"
 
-julia> Spell_Out(12)
+julia> Spelled_Out(12)
 "Twelve"
 
-julia> Spell_Out(100)
+julia> Spelled_Out(100)
 "One Hundred"
 ```
 
