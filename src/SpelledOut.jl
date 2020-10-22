@@ -90,8 +90,10 @@ function __big_convert(number::Integer; british::Bool=false)::String
         end
     end
 
-    if ! iszero(divisor) && ! iszero(modulus)
-        word = word * "and "
+    if british
+        if ! iszero(divisor) && ! iszero(modulus)
+            word = word * "and "
+        end
     end
     
     if modulus > 0
