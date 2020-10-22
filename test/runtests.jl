@@ -1,4 +1,6 @@
-using SpelledOut
+include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl"))
+
+using .SpelledOut
 using Test
 
 @testset "SpelledOut.jl" begin
