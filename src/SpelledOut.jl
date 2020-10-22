@@ -104,7 +104,7 @@ function spelled_out(number::Integer; british::Bool=false)::String
             word = __large_convert(l, british=british) * " " * scale_numbers[d_idx - 1]
             
             if r > 0
-                word = word * ", " * spelled_out(r)
+                word = word * ", " * spelled_out(r, british=british)
             end
             
             if isnegative
