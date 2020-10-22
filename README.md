@@ -14,14 +14,11 @@ This is a minimal package for a pure Julia implementation of converting numbers 
 julia> spelled_out(12)
 "twelve"
 
-julia> Spelled_out(12)
-"Twelve"
+julia> spelled_out(112)
+"one hundred twelve"
 
-julia> Spelled_Out(12)
-"Twelve"
-
-julia> Spelled_Out(100)
-"One Hundred"
+julia> spelled_out(112, british = true)
+"one hundred and twelve"
 ```
 
 [code-style-img]: https://img.shields.io/badge/code%20style-blue-4495d1.svg

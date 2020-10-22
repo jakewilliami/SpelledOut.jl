@@ -1,6 +1,6 @@
 module SpelledOut
 
-export spelled_out, Spelled_out, Spelled_Out
+export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
 const _small_numbers = String[
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
@@ -64,16 +64,10 @@ function __small_convert(number::Integer; british::Bool=false)::String
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
                 word = d_cap * "-" * _small_numbers[mod(number, 10) + 1]
-                # if british
-                #     word = "and " * word
-                # end
                 
                 return word
             end
-            
-            # if british
-            #     d_cap = "and " * d_cap
-            # end
+
             return d_cap
         end
         v += 1
@@ -94,6 +88,10 @@ function __big_convert(number::Integer; british::Bool=false)::String
         if modulus > 0
             word = word * " "
         end
+    end
+
+    if ! iszero(divisor) && ! iszero(modulus)
+        word = word * "and "
     end
     
     if modulus > 0
@@ -142,8 +140,6 @@ function spelled_out(number::Integer; british::Bool=false)::String
         
         if d_number > number
             modulus = BigInt(big(1000)^(d_idx - 1))
-            # l = BigInt(round(number / mod))
-            # r = BigInt(round(number - (l * mod)))
             l, r = divrem(number, modulus)
             word = __big_convert(l, british=british) * " " * scale_numbers[d_idx - 1]
             
@@ -177,5 +173,6 @@ end
 
 Spelled_out(number::Real; british::Bool=false)::String = uppercasefirst(spelled_out(number, british=british))
 Spelled_Out(number::Real; british::Bool=false)::String = titlecase(spelled_out(number, british=british))
+SPELLED_OUT(number::Real; british::Bool=false)::String = uppercase(spelled_out(number, british=british))
 
 end # end module
