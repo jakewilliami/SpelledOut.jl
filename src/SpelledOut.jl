@@ -6,7 +6,7 @@ include(joinpath(dirname(@__FILE__), "standard_dictionary_numbers_extended.jl"))
 include(joinpath(dirname(@__FILE__), "large_standard_dictionary_numbers_extended.jl"))
     
 # convert a value < 100 to English.
-function __small_convert(number::Integer; british::Bool=false)::String
+function __small_convert(number::Integer; british::Bool=false, dict::Symbol=:modern)::String
     scale_numbers = _scale_modern # define scale type
     if number < 20
         word = _small_numbers[number + 1]
@@ -35,7 +35,7 @@ end
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-function __large_convert(number::Integer; british::Bool=false)::String
+function __large_convert(number::Integer; british::Bool=false, dict::Symbol=:modern)::String
     scale_numbers = _scale_modern # define scale type
     word = string() # initiate empty string
     divisor = div(number, 100)
@@ -55,26 +55,33 @@ function __large_convert(number::Integer; british::Bool=false)::String
     end
     
     if modulus > 0
-        word = word * __small_convert(modulus, british=british)
+        word = word * __small_convert(modulus, british=british, dict=dict)
     end
     
     return word
 end
 
-function spelled_out(number::Integer; british::Bool=false)::String
-    scale_numbers = _scale_modern # define scale type
+function spelled_out(number::Integer; british::Bool=false, dict::Symbol=:modern)::String
+    scale_numbers = _scale_modern # default to :modern
+    if isequal(dict, :british)
+        scale_numbers = _scale_traditional_british
+    elseif isequal(dict, :european)
+        scale_numbers = _scale_traditional_european
+    end
+    
     number = big(number)
     isnegative = false
     if number < 0
         isnegative = true
     end
+    
     number = abs(number)
     if number > limit - 1
-        throw(error("SpelledOut.jl does not support numbers larger than $(spelled_out(limit - 1)).  Sorry about that!"))
+        throw(error("SpelledOut.jl does not support numbers larger than $(spelled_out(limit - 1, british=true)).  Sorry about that!"))
     end
     
     if number < 100
-        word = __small_convert(number, british=british)
+        word = __small_convert(number, british=british, dict=dict)
         
         if isnegative
             word = "negative " * word
@@ -84,7 +91,7 @@ function spelled_out(number::Integer; british::Bool=false)::String
     end
     
     if number < 1000
-        word = __large_convert(number, british=british)
+        word = __large_convert(number, british=british, dict=dict)
         
         if isnegative
             word = "negative " * word
@@ -101,10 +108,10 @@ function spelled_out(number::Integer; british::Bool=false)::String
         if d_number > number
             modulus = BigInt(big(1000)^(d_idx - 1))
             l, r = divrem(number, modulus)
-            word = __large_convert(l, british=british) * " " * scale_numbers[d_idx - 1]
+            word = __large_convert(l, british=british, dict=dict) * " " * scale_numbers[d_idx - 1]
             
             if r > 0
-                word = word * ", " * spelled_out(r, british=british)
+                word = word * ", " * spelled_out(r, british=british, dict=dict)
             end
             
             if isnegative
@@ -118,7 +125,7 @@ function spelled_out(number::Integer; british::Bool=false)::String
     end
 end
 
-function spelled_out(number::AbstractFloat; british::Bool=false)::String
+function spelled_out(number::AbstractFloat; british::Bool=false, dict::Symbol=:modern)::String
     type = typeof(number)
     number = big(number)
     
@@ -128,11 +135,11 @@ function spelled_out(number::AbstractFloat; british::Bool=false)::String
         throw(error("Cannot parse an object of type `$(type)` into the required integer type."))
     end
     
-    return spelled_out(number, british=british)
+    return spelled_out(number, british=british, dict=dict)
 end
 
-Spelled_out(number::Real; british::Bool=false)::String = uppercasefirst(spelled_out(number, british=british))
-Spelled_Out(number::Real; british::Bool=false)::String = titlecase(spelled_out(number, british=british))
-SPELLED_OUT(number::Real; british::Bool=false)::String = uppercase(spelled_out(number, british=british))
+Spelled_out(number::Real; british::Bool=false, dict::Symbol=:modern)::String = uppercasefirst(spelled_out(number, british=british, dict=dict))
+Spelled_Out(number::Real; british::Bool=false, dict::Symbol=:modern)::String = titlecase(spelled_out(number, british=british, dict=dict))
+SPELLED_OUT(number::Real; british::Bool=false, dict::Symbol=:modern)::String = uppercase(spelled_out(number, british=british, dict=dict))
 
 end # end module

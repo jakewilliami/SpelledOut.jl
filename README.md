@@ -19,7 +19,12 @@ julia> spelled_out(112)
 
 julia> spelled_out(112, british = true)
 "one hundred and twelve"
+
+julia> spelled_out(112, dict = :european)
+"one hundred twelve"
 ```
+
+Dictionaries supported include `:modern`, `:british`, and `:european`, and default to the former.
 
 [code-style-img]: https://img.shields.io/badge/code%20style-blue-4495d1.svg
 [code-style-url]: https://github.com/invenia/BlueStyle
