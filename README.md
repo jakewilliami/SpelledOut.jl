@@ -11,6 +11,8 @@ This is a minimal package for a pure Julia implementation of converting numbers 
 ## Examples
 
 ```julia
+julia> using SpelledOut
+
 julia> spelled_out(12)
 "twelve"
 
