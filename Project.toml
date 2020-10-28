@@ -1,7 +1,7 @@
 name = "SpelledOut"
 uuid = "4728c690-e668-4265-bc0d-51a8c0f93067"
 authors = ["Jake W. Ireland <jakewilliami@icloud.com> and contributors"]
-version = "0.1.1"
+version = "1.0.0"
 
 [compat]
 julia = "1"
