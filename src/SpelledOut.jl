@@ -148,6 +148,10 @@ function spelled_out(number::AbstractFloat; british::Bool=false, dict::Symbol=:m
     end
 end
 
+function spelled_out(number::Complex; british::Bool=false, dict::Symbol=:modern)
+    return spelled_out(real(number), british=british, dict=dict) * " and " * spelled_out(imag(number), british=british, dict=dict) * " imaginaries"
+end
+
 Spelled_out(number::Number; british::Bool=false, dict::Symbol=:modern) = uppercasefirst(spelled_out(number, british=british, dict=dict))
 Spelled_Out(number::Number; british::Bool=false, dict::Symbol=:modern) = titlecase(spelled_out(number, british=british, dict=dict))
 SPELLED_OUT(number::Number; british::Bool=false, dict::Symbol=:modern) = uppercase(spelled_out(number, british=british, dict=dict))
