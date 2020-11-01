@@ -2,6 +2,10 @@ const _small_numbers = String[
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
     
+const _small_number_dictionary = Dict{Char, String}(
+    '0' => "zero", '1' => "one", '2' => "two", '3' => "three", '4' => "four", '5' => "five", '6' => "six",
+    '7' => "seven", '8' => "eight", '9' => "nine")
+    
 const _tens = String[
     "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
     

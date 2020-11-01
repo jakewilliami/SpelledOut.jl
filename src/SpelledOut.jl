@@ -1,12 +1,14 @@
 module SpelledOut
 
+using DecFP: Dec64
+
 export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
 include(joinpath(dirname(@__FILE__), "standard_dictionary_numbers_extended.jl"))
 include(joinpath(dirname(@__FILE__), "large_standard_dictionary_numbers_extended.jl"))
     
 # convert a value < 100 to English.
-function small_convert(number::Integer; british::Bool=false, dict::Symbol=:modern)::String
+function small_convert(number::Integer; british::Bool=false, dict::Symbol=:modern)
     scale_numbers = _scale_modern # define scale type
     if number < 20
         word = _small_numbers[number + 1]
@@ -35,7 +37,7 @@ end
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-function large_convert(number::Integer; british::Bool=false, dict::Symbol=:modern)::String
+function large_convert(number::Integer; british::Bool=false, dict::Symbol=:modern)
     scale_numbers = _scale_modern # define scale type
     word = string() # initiate empty string
     divisor = div(number, 100)
@@ -61,7 +63,18 @@ function large_convert(number::Integer; british::Bool=false, dict::Symbol=:moder
     return word
 end
 
-function spelled_out(number::Integer; british::Bool=false, dict::Symbol=:modern)::String
+function decimal_convert(number::AbstractFloat; british::Bool=false, dict::Symbol=:modern)
+    whole, decimal = split(string(number), ".")
+    word = spelled_out(parse(BigInt, whole), british=british, dict=dict) * string(" point")
+    
+    for i in decimal
+        word = word * " " * _small_number_dictionary[i]
+    end
+    
+    return word
+end
+
+function spelled_out(number::Integer; british::Bool=false, dict::Symbol=:modern)
     scale_numbers = _scale_modern # default to :modern
     if isequal(dict, :british)
         scale_numbers = _scale_traditional_british
@@ -125,21 +138,18 @@ function spelled_out(number::Integer; british::Bool=false, dict::Symbol=:modern)
     end
 end
 
-function spelled_out(number::AbstractFloat; british::Bool=false, dict::Symbol=:modern)::String
-    type = typeof(number)
-    number = big(number)
-    
+function spelled_out(number::AbstractFloat; british::Bool=false, dict::Symbol=:modern)
     try
-        number = BigInt(number)
+        return spelled_out(BigInt(number), british=british, dict=dict)
     catch
-        throw(error("Cannot parse an object of type `$(type)` into the required integer type."))
+        number = Dec64(number)
+        
+        return decimal_convert(number, british=british, dict=dict)
     end
-    
-    return spelled_out(number, british=british, dict=dict)
 end
 
-Spelled_out(number::Real; british::Bool=false, dict::Symbol=:modern)::String = uppercasefirst(spelled_out(number, british=british, dict=dict))
-Spelled_Out(number::Real; british::Bool=false, dict::Symbol=:modern)::String = titlecase(spelled_out(number, british=british, dict=dict))
-SPELLED_OUT(number::Real; british::Bool=false, dict::Symbol=:modern)::String = uppercase(spelled_out(number, british=british, dict=dict))
+Spelled_out(number::Number; british::Bool=false, dict::Symbol=:modern) = uppercasefirst(spelled_out(number, british=british, dict=dict))
+Spelled_Out(number::Number; british::Bool=false, dict::Symbol=:modern) = titlecase(spelled_out(number, british=british, dict=dict))
+SPELLED_OUT(number::Number; british::Bool=false, dict::Symbol=:modern) = uppercase(spelled_out(number, british=british, dict=dict))
 
 end # end module
