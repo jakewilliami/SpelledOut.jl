@@ -8,7 +8,6 @@ os:
   - bsd
 
 julia:
-  - 1.0
   - 1.5
   - nightly
 
