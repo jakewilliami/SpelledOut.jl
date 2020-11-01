@@ -14,7 +14,7 @@ function small_convert(number::Integer; british::Bool=false, dict::Symbol=:moder
         return word
     end
     
-    v = 1
+    v = 0
     while v < length(_tens)
         d_cap = _tens[v + 1]
         d_number = BigInt(20 + 10 * v)
