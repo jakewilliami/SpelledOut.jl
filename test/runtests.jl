@@ -26,4 +26,7 @@ using Test
     @test spelled_out(123456789, british=true, dict=:british) == "one hundred and twenty-three million, four hundred and fifty-six thousand, seven hundred and eighty-nine"
     @test spelled_out(1234567890123, british=true, dict=:british) == "one billion, two hundred and thirty-four thousand million, five hundred and sixty-seven million, eight hundred and ninety thousand, one hundred and twenty-three"
     @test spelled_out(1234567890123, british=true, dict=:modern) == "one trillion, two hundred and thirty-four billion, five hundred and sixty-seven million, eight hundred and ninety thousand, one hundred and twenty-three"
+    @test spelled_out(3.0) == "three"
+    @test spelled_out(3) == "three"
+    @test spelled_out(3.141592653) == "three point one four one five nine two six five three"
 end
