@@ -7,6 +7,7 @@ version = "1.0.1"
 DecFP = "55939f99-70c6-5e9b-8bb0-5071ed7d61fd"
 
 [compat]
+DecFP = "1.0"
 julia = "1"
 
 [extras]
