@@ -25,12 +25,6 @@ jobs:
       script:
         - julia --color=yes --project=. -e 'using Pkg; Pkg.instantiate()'
         - julia --color=yes --project=. test/runtests.jl
-      julia: 1.0
-
-    - stage: test
-      script:
-        - julia --color=yes --project=. -e 'using Pkg; Pkg.instantiate()'
-        - julia --color=yes --project=. test/runtests.jl
       julia: 1.5
 
     - stage: test
