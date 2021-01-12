@@ -4,21 +4,21 @@ using DecFP: Dec64
 
 export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
-include("en.jl")
-
 _supported_languages = """
+Current languages to choose from are:
   - `:en`
     - Dictionaries supported include `:modern`, `:british`, and `:european`, and default to the former.
     - If the `british` boolean is true (which it is not by default), the programme will add "and" where needed.
 """
+
+include("en.jl")
 
 """
 ```julia
 spelled_out(number; lang = :en, british = false, dict = :modern)
 ```
 
-Spells out a number in words, in lowercase, given a specified language.  Current languages to choose from are:
-$_supported_languages
+Spells out a number in words, in lowercase, given a specified language.  $_supported_languages
 
 ---
 
@@ -53,32 +53,29 @@ end
 Spelled_out(number; lang = :en, british = false, dict = :modern)
 ```
 
-Spells out a number in words, starting with a capital letter, given a specified language.  Current languages to choose from are:
-$_supported_languages
+Spells out a number in words, starting with a capital letter, given a specified language.  $_supported_languages
 """
 Spelled_out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
-    uppercasefirst(spelled_out(number, british=british, dict=dict))
+    uppercasefirst(spelled_out(number, lang = lang, british = british, dict = dict))
 
 """
 ```julia
 Spelled_Out(number; lang = :en, british = false, dict = :modern)
 ```
 
-Spells out a number in words, in title-case, given a specified language.  Current languages to choose from are:
-$_supported_languages
+Spells out a number in words, in title-case, given a specified language.  $_supported_languages
 """
 Spelled_Out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
-    titlecase(spelled_out(number, british=british, dict=dict))
+    titlecase(spelled_out(number, lang = lang, british = british, dict = dict))
 
 """
 ```julia
 SPELLED_OUT(number; lang = :en, british = false, dict = :modern)
 ```
 
-Spells out a number in words, in uppercase, given a specified language.  Current languages to choose from are:
-$_supported_languages
+Spells out a number in words, in uppercase, given a specified language.  $_supported_languages
 """
 SPELLED_OUT(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
-    uppercase(spelled_out(number, british=british, dict=dict))
+    uppercase(spelled_out(number, lang = lang, british = british, dict = dict))
 
 end # end module
