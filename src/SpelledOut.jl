@@ -48,7 +48,7 @@ function spelled_out(number::Number; lang::Symbol = :en, british::Bool = false, 
     return nothing
 end
 
-""""
+"""
 ```julia
 Spelled_out(number; lang = :en, british = false, dict = :modern)
 ```
@@ -59,7 +59,7 @@ $_supported_languages
 Spelled_out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
     uppercasefirst(spelled_out(number, british=british, dict=dict))
 
-""""
+"""
 ```julia
 Spelled_Out(number; lang = :en, british = false, dict = :modern)
 ```
@@ -70,7 +70,7 @@ $_supported_languages
 Spelled_Out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
     titlecase(spelled_out(number, british=british, dict=dict))
 
-""""
+"""
 ```julia
 SPELLED_OUT(number; lang = :en, british = false, dict = :modern)
 ```
