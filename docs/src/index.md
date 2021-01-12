@@ -1,5 +1,6 @@
-# SpelledOut.jl Documentation
+# Home
 
+## Contents
 ```@contents
 ```
 
@@ -10,18 +11,12 @@ DocTestSetup = quote
 end
 ```
 
-## Adding SpelledOut.jl
+## Installing SpelledOut.jl
 ```@repl
 using Pkg
 Pkg.add("SpelledOut")
 ```
 
-## Documentation
-```@autodocs
-Modules = [SpelledOut]
-```
-
 ## Index
-
 ```@index
 ```

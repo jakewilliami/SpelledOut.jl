@@ -10,7 +10,9 @@ Documenter.makedocs(
     sitename = "SpelledOut Documentation",
     expandfirst = [],
     pages = [
-        "Index" => "index.md",
+        "Home" => "index.md",
+        "Supported Languages" => "supported_languages.md",
+        "Usage" => "usage.md"
     ]
 )
 
