@@ -6,13 +6,37 @@ export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
 include("en.jl")
 
-@doc raw"""
+_supported_languages = """
+  - `:en`
+    - Dictionaries supported include `:modern`, `:british`, and `:european`, and default to the former.
+    - If the `british` boolean is true (which it is not by default), the programme will add "and" where needed.
+"""
+
+"""
 ```julia
 spelled_out(number; lang = :en, british = false, dict = :modern)
 ```
 
 Spells out a number in words, in lowercase, given a specified language.  Current languages to choose from are:
-  - `:en`
+$_supported_languages
+
+---
+
+### Examples
+
+```julia
+julia> spelled_out(12, lang = :en)
+"twelve"
+
+julia> spelled_out(112, lang = :en)
+"one hundred twelve"
+
+julia> spelled_out(112, lang = :en, british = true)
+"one hundred and twelve"
+
+julia> spelled_out(112, lang = :en, dict = :european)
+"one hundred twelve"
+```
 """
 function spelled_out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern)
     if lang == :en
@@ -24,35 +48,35 @@ function spelled_out(number::Number; lang::Symbol = :en, british::Bool = false, 
     return nothing
 end
 
-@doc raw""""
+""""
 ```julia
 Spelled_out(number; lang = :en, british = false, dict = :modern)
 ```
 
 Spells out a number in words, starting with a capital letter, given a specified language.  Current languages to choose from are:
-  - `:en`
+$_supported_languages
 """
 Spelled_out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
     uppercasefirst(spelled_out(number, british=british, dict=dict))
 
-@doc raw""""
+""""
 ```julia
 Spelled_Out(number; lang = :en, british = false, dict = :modern)
 ```
 
 Spells out a number in words, in title-case, given a specified language.  Current languages to choose from are:
-  - `:en`
+$_supported_languages
 """
 Spelled_Out(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
     titlecase(spelled_out(number, british=british, dict=dict))
 
-@doc raw""""
+""""
 ```julia
 SPELLED_OUT(number; lang = :en, british = false, dict = :modern)
 ```
 
 Spells out a number in words, in uppercase, given a specified language.  Current languages to choose from are:
-  - `:en`
+$_supported_languages
 """
 SPELLED_OUT(number::Number; lang::Symbol = :en, british::Bool = false, dict::Symbol = :modern) =
     uppercase(spelled_out(number, british=british, dict=dict))
