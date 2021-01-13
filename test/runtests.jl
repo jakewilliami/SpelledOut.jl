@@ -4,12 +4,12 @@
     "${BASH_SOURCE[0]}" "$@"
     =#
 
-include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl"))
+#include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl"))
 
-using .SpelledOut
 using Test
+using SpelledOut
 
-@testset "SpelledOut.jl" begin
+@testset "English" begin
 ### ENGLISH TESTS
     @test spelled_out(1234, lang = :en) == "one thousand, two hundred thirty-four"
     @test spelled_out(1234) == "one thousand, two hundred thirty-four" # default to english
@@ -32,3 +32,5 @@ using Test
     @test spelled_out(3, lang = :en) == "three"
     @test spelled_out(3.141592653, lang = :en) == "three point one four one five nine two six five three"
 end
+
+nothing
