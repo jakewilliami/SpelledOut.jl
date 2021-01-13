@@ -46,3 +46,4 @@ const _scale_traditional_european = String[
     ]
     
 const limit = BigInt(big(10)^120)
+const limit_str = "10^120"
