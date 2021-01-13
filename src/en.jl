@@ -84,7 +84,7 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
     
     number = abs(number)
     if number > limit - 1
-        throw(error("SpelledOut.jl does not support numbers larger than $(limit).  Sorry about that!"))
+        throw(error("SpelledOut.jl does not support numbers larger than $(limit_str).  Sorry about that!"))
     end
     
     if number < 100
