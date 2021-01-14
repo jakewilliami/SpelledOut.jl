@@ -1,15 +1,11 @@
-# include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl")); using .SpelledOut
+include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl")); using .SpelledOut
 using Test
-using SpelledOut
+# using SpelledOut
 
 @testset "English" begin
     @test spelled_out(1234, lang = :en) == "one thousand, two hundred thirty-four"
     @test spelled_out(1234, lang = :en_US) == "one thousand, two hundred thirty-four"
-    @test spelled_out(1234) == "one thousand, two hundred thirty-four" # default to english
     @test spelled_out(1234, lang = :en_UK) == "one thousand, two hundred and thirty-four"
-    @test Spelled_out(1234, lang = :en) == "One thousand, two hundred thirty-four"
-    @test Spelled_Out(1234, lang = :en) == "One Thousand, Two Hundred Thirty-Four"
-    @test SPELLED_OUT(1234, lang = :en) == "ONE THOUSAND, TWO HUNDRED THIRTY-FOUR"
     @test spelled_out(123456789, lang = :en) == "one hundred twenty-three million, four hundred fifty-six thousand, seven hundred eighty-nine"
     @test spelled_out(123456789, lang = :en_UK) == "one hundred and twenty-three million, four hundred and fifty-six thousand, seven hundred and eighty-nine"
     @test spelled_out(0, lang = :en) == "zero"
