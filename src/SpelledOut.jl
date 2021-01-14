@@ -43,34 +43,4 @@ function spelled_out(number::Number; lang::Symbol = :en, dict::Symbol = :modern)
     return nothing
 end
 
-"""
-```julia
-Spelled_out(number; lang = :en, dict = :modern)
-```
-
-A wrapper for `spelled_out`.  Spells out a number in words, starting with a capital letter, given a specified language.  The `dict` keyword argument only applies to some languages; see "Supported Languages" in the docs for more information.
-"""
-Spelled_out(number::Number; lang::Symbol = :en, dict::Symbol = :modern) =
-    uppercasefirst(spelled_out(number, lang = lang, dict = dict))
-
-"""
-```julia
-Spelled_Out(number; lang = :en, dict = :modern)
-```
-
-A wrapper for `spelled_out`.  Spells out a number in words, in title-case, given a specified language.  The `dict` keyword argument only applies to some languages; see "Supported Languages" in the docs for more information.
-"""
-Spelled_Out(number::Number; lang::Symbol = :en, dict::Symbol = :modern) =
-    titlecase(spelled_out(number, lang = lang, dict = dict))
-
-"""
-```julia
-SPELLED_OUT(number; lang = :en, dict = :modern)
-```
-
-A wrapper for `spelled_out`.  Spells out a number in words, in uppercase, given a specified language.  The `dict` keyword argument only applies to some languages; see "Supported Languages" in the docs for more information.
-"""
-SPELLED_OUT(number::Number; lang::Symbol = :en, dict::Symbol = :modern) =
-    uppercase(spelled_out(number, lang = lang, dict = dict))
-
 end # end module
