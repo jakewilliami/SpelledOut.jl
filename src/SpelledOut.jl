@@ -8,10 +8,14 @@ include("en.jl")
 
 """
 ```julia
-spelled_out(number; lang = :en, dict = :modern)
+function spelled_out(
+    number::Number;
+    lang::Symbol = <locale language>,
+    dict::Symbol = :modern
+)
 ```
 
-Spells out a number in words, in lowercase, given a specified language.  The `dict` keyword argument only applies to some languages; see "Supported Languages" in the docs for more information.
+Spells out a number in words, in lowercase, given a specified language.  The default language is the one used on your system.  The `dict` keyword argument only applies to some languages; see "Supported Languages" in the docs for more information.
 
 ---
 
@@ -31,10 +35,15 @@ julia> spelled_out(112, lang = :en, dict = :european)
 "one hundred twelve"
 ```
 """
-function spelled_out(number::Number; lang::Symbol = :en, dict::Symbol = :modern)
-    if lang == :en || lang == :en_US
+function spelled_out(
+    number::Number;
+    lang::Symbol = Symbol(first(split(ENV["LANG"], '.'))),
+    dict::Symbol = :modern
+)
+
+    if lang ∈ (:en, :en_US)
         return spelled_out_en(number, british = false, dict = dict)
-    elseif lang == :en_UK
+    elseif lang ∈ (:en_UK, :en_GB, :en_NZ, :en_AU)
         return spelled_out_en(number, british = true, dict = dict)
     end
     
