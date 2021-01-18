@@ -1,6 +1,7 @@
 module SpelledOut
 
-using DecFP: Dec64
+using DecFP: Dec128
+using Formatting: format
 
 export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
