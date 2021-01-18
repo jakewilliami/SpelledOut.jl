@@ -1,6 +1,6 @@
-include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl")); using .SpelledOut
+# include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl")); using .SpelledOut
 using Test
-# using SpelledOut
+using SpelledOut
 
 @testset "English" begin
     @test spelled_out(1234, lang = :en) == "one thousand, two hundred thirty-four"
@@ -20,6 +20,7 @@ using Test
     @test spelled_out(3.0, lang = :en) == "three"
     @test spelled_out(3, lang = :en) == "three"
     @test spelled_out(3.141592653, lang = :en) == "three point one four one five nine two six five three"
+    @test spelled_out(2^log2(3390000), lang = :en) == "three million, three hundred ninety thousand" # should convert 3.3899999999999986e6 to an integer
 end
 
 nothing
