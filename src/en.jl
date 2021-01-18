@@ -57,17 +57,6 @@ function large_convert_en(number::Integer; british::Bool = false, dict::Symbol =
     return word
 end
 
-function decimal_convert_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
-    whole, decimal = split(string(number), ".")
-    word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
-    
-    for i in decimal
-        word = word * " " * _small_number_dictionary[i]
-    end
-    
-    return word
-end
-
 function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # default to :modern
     if isequal(dict, :british)
@@ -132,12 +121,41 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
     end
 end
 
-function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
-    try
-        return spelled_out_en(BigInt(number), british = british, dict = dict)
-    catch
-        return decimal_convert_en(Dec64(number), british = british, dict = dict)
+function decimal_convert_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
+    # decimal, whole = modf(number)
+    # whole = round(BigInt, whole)
+    whole, decimal = split(string(number), ".")
+    word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
+    # word = spelled_out_en(whole, british=british, dict=dict) * string(" point")
+    
+    for i in decimal
+        word = word * " " * _small_number_dictionary[i]
     end
+    
+    return word
+end
+
+function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
+    str_number = format(number)
+    if occursin('.', str_number)
+        _length_of_presicion = length(string(first(modf(number)))) - 2
+        number = parse(BigFloat, format(number, precision = _length_of_presicion)) # convert 1.01e10 to 10100000000
+    else
+        # It is an integer is scientific notation, treat normally without decimal precision considerations
+        number = parse(BigFloat, str_number)
+    end
+    
+    if isinteger(number)
+        return spelled_out_en(BigInt(number), british = british, dict = dict)
+    else
+        return decimal_convert_en(Dec128(number), british = british, dict = dict)
+    end
+    
+    # try
+    #     return spelled_out_en(parse(BigInt, number), british = british, dict = dict)
+    # catch
+    #     return decimal_convert_en(parse(Dec128, number), british = british, dict = dict)
+    # end
     
     return nothing
 end
