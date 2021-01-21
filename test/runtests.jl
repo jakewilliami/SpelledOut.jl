@@ -23,4 +23,9 @@ using SpelledOut
     @test spelled_out(2^log2(3390000), lang = :en) == "three million, three hundred ninety thousand" # should convert 3.3899999999999986e6 to an integer
 end
 
+@testset "Spanish" begin
+    @test spelled_out(585000, lang = :es) == "quinientos ochenta y cinco mil"
+   
+end
+
 nothing

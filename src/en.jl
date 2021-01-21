@@ -63,6 +63,9 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
         scale_numbers = _scale_traditional_british
     elseif isequal(dict, :european)
         scale_numbers = _scale_traditional_european
+    elseif isequal(dict, :modern)
+    else
+        throw(error("unrecognized dict value: $dict"))
     end
     
     number = big(number)
