@@ -9,6 +9,7 @@ Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
 
 [compat]
 DecFP = "1.1"
+Formatting = "0.4"
 julia = "1"
 
 [extras]
