@@ -213,6 +213,9 @@ function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = 
 		return isone(_num) ? word : word * "s"
 end
 
+function spelled_out_en(number::AbstractIrrational; british::Bool = false, dict::Symbol = :modern)
+    throw(error("Please round the input number, as we support floating point printing but cannot support irrational printing."))
+end
 
 # Fallback method if we do not know how to handle the input
 function spelled_out_en(number; british::Bool = false, dict::Symbol = :modern)
