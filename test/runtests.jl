@@ -22,7 +22,19 @@ using SpelledOut
     @test spelled_out(3.141592653589793, lang = :en) == "three point one four one five nine two six five three five eight nine seven nine three"
     @test spelled_out(2^log2(3390000), lang = :en) == "three million, three hundred ninety thousand" # should convert 3.3899999999999986e6 to an integer
     @test spelled_out(1000000.01, lang = :en) == "one million point zero one" # parse big floats correctly (i.e., avoid scientific notation.  Caveat: this is slow)
+    @test spelled_out(1//3, lang = :en_UK) == "one third"
+    @test spelled_out(1//5, lang = :en_UK) == "one fifth"
+    @test spelled_out(1//102, lang = :en_UK) == "one one hundred and second"
+    @test spelled_out(1//102, lang = :en_US) == "one one hundred second"
+    @test spelled_out(5//102, lang = :en_UK) == "five one hundred and seconds"
+    @test spelled_out(5//12, lang = :en_UK) == "five twelfths"
+    @test spelled_out(1//1, lang = :en_UK) == "one"
+    @test spelled_out(40//1, lang = :en_UK) == "forty"
+    @test spelled_out(40//2, lang = :en_UK) == "twenty"
+    @test spelled_out(40//6, lang = :en_UK) == "twenty thirds"
 end
+
+
 
 @testset "Spanish" begin
     @test spelled_out(585000, lang = :es) == "quinientos ochenta y cinco mil"
