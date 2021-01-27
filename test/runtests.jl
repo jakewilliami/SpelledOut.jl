@@ -19,8 +19,9 @@ using SpelledOut
     @test spelled_out(1234567890123, lang = :en_UK, dict=:modern) == "one trillion, two hundred and thirty-four billion, five hundred and sixty-seven million, eight hundred and ninety thousand, one hundred and twenty-three"
     @test spelled_out(3.0, lang = :en) == "three"
     @test spelled_out(3, lang = :en) == "three"
-    @test spelled_out(3.141592653, lang = :en) == "three point one four one five nine two six five three"
+    @test spelled_out(3.141592653589793, lang = :en) == "three point one four one five nine two six five three five eight nine seven nine three"
     @test spelled_out(2^log2(3390000), lang = :en) == "three million, three hundred ninety thousand" # should convert 3.3899999999999986e6 to an integer
+    @test spelled_out(1000000.01, lang = :en) == "one million point zero one" # parse big floats correctly (i.e., avoid scientific notation.  Caveat: this is slow)
 end
 
 nothing
