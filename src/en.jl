@@ -136,64 +136,34 @@ function decimal_convert_en(number::AbstractString; british::Bool = false, dict:
     return word
 end
 
-function decimal_convert_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
-    #=# decimal, whole = modf(number)
-    # whole = round(BigInt, whole)
-    whole, decimal = split(string(number), ".")
-    word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
-    # word = spelled_out_en(whole, british=british, dict=dict) * string(" point")
-    
-    for i in decimal
-        word = word * " " * _small_number_dictionary[i]
-    end
-    
-    return word=#
-    return decimal_convert_en(format(number), british = british, dict = dict)
-end
-
 function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
     str_number = format(number)
     if occursin('.', str_number)
-    # if ! isinteger(number)
         _decimal, _ = modf(Dec64(number))
-        # println(_decimal)
         _length_of_presicion = length(string(_decimal)) - 2 # (ndigits(_whole) + 1)
-        # println(split(str_number, '.'))
-        # _length_of_presicion = length(last(split(str_number, '.')))
-        # println(format(number, precision = _length_of_presicion))
-        # number = parse(Dec128, format(number, precision = _length_of_presicion)) # convert 1.01e10 to 10100000000
-        # println(_length_of_presicion)
         number = format(number, precision = _length_of_presicion)
-        # println(number)
-        # println(number)
     else
         # It is an integer is scientific notation, treat normally without decimal precision considerations
-        number = parse(BigFloat, str_number)
+        # E.g., 1e10 should be parsed as an integer (as should 1.0e10)
+        number = parse(BigInt, str_number)
     end
     
-    # println(number)
     if isa(number, AbstractString)
         # if the number is a string then it is a decimal, which is formatted precisely
         # for correct precision with decimal places
         return decimal_convert_en(number, british = british, dict = dict)
-        # println(DecFP.Dec64(number))
-        # return decimal_convert_en(Dec128(number), british = british, dict = dict)
     elseif isinteger(number)
         # otherwise, it is an integer
-        return spelled_out_en(BigInt(number), british = british, dict = dict)
+        return spelled_out_en(number, british = british, dict = dict)
     else
         throw(error("Cannot parse type $(typeof(number)).  Please make an issue."))
     end
     
-    # try
-    #     return spelled_out_en(parse(BigInt, number), british = british, dict = dict)
-    # catch
-    #     return decimal_convert_en(parse(Dec128, number), british = british, dict = dict)
-    # end
-    
+    # should never get here
     return nothing
 end
 
+# Spell out complex numbers
 function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :modern)
     return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict=dict) * " imaginaries"
 end
