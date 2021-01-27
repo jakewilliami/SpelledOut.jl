@@ -167,3 +167,8 @@ end
 function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :modern)
     return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict=dict) * " imaginaries"
 end
+
+# Fallback method if we do not know how to handle the input
+function spelled_out_en(number; british::Bool = false, dict::Symbol = :modern)
+    throw(error("Cannot parse type $(typeof(number)).  Please make an issue."))
+end
