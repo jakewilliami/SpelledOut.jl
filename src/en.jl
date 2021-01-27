@@ -1,5 +1,6 @@
 include(joinpath(@__DIR__, "en", "standard_dictionary_numbers_extended.jl"))
 include(joinpath(@__DIR__, "en", "large_standard_dictionary_numbers_extended.jl"))
+include(joinpath(@__DIR__, "en", "ordinal_dictionaries.jl"))
     
 # convert a value < 100 to English.
 function small_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
@@ -124,6 +125,35 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
     end
 end
 
+# Need to print ordinal numbers for the irrational printing
+function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
+    s = spelled_out_en(number, british = british, dict = dict)
+
+    lastword = split(s)[end]
+    redolast = split(lastword, "-")[end]
+
+    if redolast != lastword
+        lastsplit = "-"
+        word = redolast
+    else
+        lastsplit = " "
+        word = lastword
+    end
+
+    firstpart = reverse(split(reverse(s), lastsplit, limit = 2)[end])
+    firstpart = (firstpart == word) ? string() : firstpart * lastsplit
+
+    if haskey(irregular, word)
+        word = irregular[word]
+    elseif word[end] == 'y'
+        word = word[1:end-1] * ysuffix
+    else
+        word = word * suffix
+    end
+
+    return firstpart * word
+end
+
 # This method is an internal method used for spelling out floats
 function decimal_convert_en(number::AbstractString; british::Bool = false, dict::Symbol = :modern)
     # decimal, whole = modf(number)
@@ -170,6 +200,19 @@ end
 function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :modern)
     return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict=dict) * " imaginaries"
 end
+
+function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = :modern)
+		_num, _den = number.num, number.den
+        
+        # return the number itself if the denomimator is one
+		isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
+        
+		word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
+        
+        # account for pluralisation
+		return isone(_num) ? word : word * "s"
+end
+
 
 # Fallback method if we do not know how to handle the input
 function spelled_out_en(number; british::Bool = false, dict::Symbol = :modern)
