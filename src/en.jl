@@ -121,10 +121,11 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
     end
 end
 
-function decimal_convert_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
+# This method is an internal method used for spelling out floats
+function decimal_convert_en(number::AbstractString; british::Bool = false, dict::Symbol = :modern)
     # decimal, whole = modf(number)
     # whole = round(BigInt, whole)
-    whole, decimal = split(string(number), ".")
+    whole, decimal = split(number, ".")
     word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
     # word = spelled_out_en(whole, british=british, dict=dict) * string(" point")
     
@@ -135,20 +136,53 @@ function decimal_convert_en(number::AbstractFloat; british::Bool = false, dict::
     return word
 end
 
+function decimal_convert_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
+    #=# decimal, whole = modf(number)
+    # whole = round(BigInt, whole)
+    whole, decimal = split(string(number), ".")
+    word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
+    # word = spelled_out_en(whole, british=british, dict=dict) * string(" point")
+    
+    for i in decimal
+        word = word * " " * _small_number_dictionary[i]
+    end
+    
+    return word=#
+    return decimal_convert_en(format(number), british = british, dict = dict)
+end
+
 function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
     str_number = format(number)
     if occursin('.', str_number)
-        _length_of_presicion = length(string(first(modf(number)))) - 2
-        number = parse(BigFloat, format(number, precision = _length_of_presicion)) # convert 1.01e10 to 10100000000
+    # if ! isinteger(number)
+        _decimal, _ = modf(Dec64(number))
+        # println(_decimal)
+        _length_of_presicion = length(string(_decimal)) - 2 # (ndigits(_whole) + 1)
+        # println(split(str_number, '.'))
+        # _length_of_presicion = length(last(split(str_number, '.')))
+        # println(format(number, precision = _length_of_presicion))
+        # number = parse(Dec128, format(number, precision = _length_of_presicion)) # convert 1.01e10 to 10100000000
+        # println(_length_of_presicion)
+        number = format(number, precision = _length_of_presicion)
+        # println(number)
+        # println(number)
     else
         # It is an integer is scientific notation, treat normally without decimal precision considerations
         number = parse(BigFloat, str_number)
     end
     
-    if isinteger(number)
+    # println(number)
+    if isa(number, AbstractString)
+        # if the number is a string then it is a decimal, which is formatted precisely
+        # for correct precision with decimal places
+        return decimal_convert_en(number, british = british, dict = dict)
+        # println(DecFP.Dec64(number))
+        # return decimal_convert_en(Dec128(number), british = british, dict = dict)
+    elseif isinteger(number)
+        # otherwise, it is an integer
         return spelled_out_en(BigInt(number), british = british, dict = dict)
     else
-        return decimal_convert_en(Dec128(number), british = british, dict = dict)
+        throw(error("Cannot parse type $(typeof(number)).  Please make an issue."))
     end
     
     # try
