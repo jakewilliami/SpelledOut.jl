@@ -42,7 +42,7 @@ julia> spelled_out(112, lang = :es)
 """
 function spelled_out(
     number::Number;
-    lang::Symbol = Symbol(first(split(ENV["LANG"], '.'))),
+    lang::Symbol = Symbol(ENV["LANG"][1:(findfirst(==('.'), ENV["LANG"]) - 1)]), # Symbol(first(split(ENV["LANG"], '.')))
     dict::Symbol = :modern
 )
 
