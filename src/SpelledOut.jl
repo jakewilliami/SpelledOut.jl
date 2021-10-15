@@ -30,7 +30,7 @@ julia> spelled_out(12, lang = :en)
 julia> spelled_out(112, lang = :en)
 "one hundred twelve"
 
-julia> spelled_out(112, lang = :en, british = true)
+julia> spelled_out(112, lang = :en_GB)
 "one hundred and twelve"
 
 julia> spelled_out(112, lang = :en, dict = :european)
