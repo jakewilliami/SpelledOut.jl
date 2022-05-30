@@ -34,10 +34,13 @@ using SpelledOut
     @test spelled_out(40//6, lang = :en_UK) == "twenty thirds"
 end
 
-
-
 @testset "Spanish" begin
     @test spelled_out(585000, lang = :es) == "quinientos ochenta y cinco mil"
+   
+end
+
+@testset "Portuguese" begin
+    @test spelled_out(585000, lang = :pt_BR) == "quinhentos e oitenta e cinco mil"
    
 end
 
