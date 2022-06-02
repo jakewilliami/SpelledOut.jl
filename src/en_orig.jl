@@ -1,30 +1,32 @@
-# dictionaries
 include(joinpath(@__DIR__, "en", "standard_dictionary_numbers_extended.jl"))
 include(joinpath(@__DIR__, "en", "large_standard_dictionary_numbers_extended.jl"))
 include(joinpath(@__DIR__, "en", "ordinal_dictionaries.jl"))
-
-# utils
-include(joinpath(@__DIR__, "en", "utils.jl"))
     
 # convert a value < 100 to English.
 function small_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # define scale type
     if number < 20
-        return _small_numbers[number + 1]
+        word = _small_numbers[number + 1]
+        
+        return word
     end
     
-    for (v, d_cap) in enumerate(_tens)
-        d_number = BigInt(20 + 10 * (v - 1))
+    v = 0
+    while v < length(_tens)
+        d_cap = _tens[v + 1]
+        d_number = BigInt(20 + 10 * v)
         
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
-                return d_cap * "-" * _small_numbers[mod(number, 10) + 1]
+                word = d_cap * "-" * _small_numbers[mod(number, 10) + 1]
+                
+                return word
             end
+
             return d_cap
         end
+        v += 1
     end
-    
-    return nothing
 end
 
 # convert a value < 1000 to english, special cased because it is the level that excludes
@@ -32,28 +34,28 @@ end
 # strings in the form of "forty-five hundred" if called directly.
 function large_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # define scale type
-    word_buf = IOBuffer()
+    word = string() # initiate empty string
     divisor = div(number, 100)
     modulus = mod(number, 100)
     
     if divisor > 0
-        print(word_buf, _small_numbers[divisor + 1], " hundred")
+        word = _small_numbers[divisor + 1] * " hundred"
         if modulus > 0
-            print(word_buf, ' ')
+            word = word * " "
         end
     end
 
     if british
         if ! iszero(divisor) && ! iszero(modulus)
-            print(word_buf, "and ")
+            word = word * "and "
         end
     end
     
     if modulus > 0
-        print(word_buf, small_convert_en(modulus, british=british, dict=dict))
+        word = word * small_convert_en(modulus, british=british, dict=dict)
     end
     
-    return String(take!(word_buf))
+    return word
 end
 
 function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
@@ -64,28 +66,42 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
         scale_numbers = _scale_traditional_european
     elseif isequal(dict, :modern)
     else
-        error("Unrecognized dict value: $dict")
+        throw(error("unrecognized dict value: $dict"))
     end
     
     number = big(number)
-    isnegative = number < 0
+    isnegative = false
+    if number < 0
+        isnegative = true
+    end
+    
     number = abs(number)
-	
     if number > limit - 1
-        error("""SpelledOut.jl does not support numbers larger than $(limit_str * " - 1").  Sorry about that!""")
+        throw(error("""SpelledOut.jl does not support numbers larger than $(limit_str * " - 1").  Sorry about that!"""))
     end
     
     if number < 100
         word = small_convert_en(number, british=british, dict=dict)
-        return isnegative ? "negative " * word : word
+        
+        if isnegative
+            word = "negative " * word
+        end
+        
+        return word
     end
     
     if number < 1000
         word = large_convert_en(number, british=british, dict=dict)
-        return isnegative ? "negative " * word : word
+        
+        if isnegative
+            word = "negative " * word
+        end
+        
+        return word
     end
     
-    for v in 0:length(scale_numbers)
+    v = 0
+    while v ≤ length(scale_numbers)
         d_idx = v
         d_number = BigInt(round(big(1000)^v))
         
@@ -98,33 +114,34 @@ function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :
                 word = word * ", " * spelled_out_en(r, british=british, dict=dict)
             end
             
-            return isnegative ? "negative " * word : word
+            if isnegative
+                word = "negative " * word
+            end
+            
+            return word
         end
+        
+        v += 1
     end
-    
-    error("Unreachable")
 end
 
 # Need to print ordinal numbers for the irrational printing
 function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
     s = spelled_out_en(number, british = british, dict = dict)
-	
-	# lastword = split(s)[end]
-    # redolast = split(lastword, "-")[end]
-	lastword = lastsplit(isspace, s)
-	redolast = lastsplit('-', lastword)
-	
+
+    lastword = split(s)[end]
+    redolast = split(lastword, "-")[end]
 
     if redolast != lastword
-        _lastsplit = '-'
+        lastsplit = "-"
         word = redolast
     else
-        _lastsplit = ' '
+        lastsplit = " "
         word = lastword
     end
 
-    firstpart = reverse(split(reverse(s), _lastsplit, limit = 2)[end])
-    firstpart = (firstpart == word) ? "" : firstpart * _lastsplit
+    firstpart = reverse(split(reverse(s), lastsplit, limit = 2)[end])
+    firstpart = (firstpart == word) ? string() : firstpart * lastsplit
 
     if haskey(irregular, word)
         word = irregular[word]
