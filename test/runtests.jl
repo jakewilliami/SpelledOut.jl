@@ -49,6 +49,16 @@ end
     @test spelled_out(-109, lang = :pt_BR) == "menos cento e nove" 
     @test spelled_out(100, lang = :pt_BR) == "cem"
     @test spelled_out(105, lang = :pt_BR) == "cento e cinco"
+    @test spelled_out(19, lang = :pt_BR) == "dezenove"
+    @test spelled_out(14, lang = :pt_BR) == "quatorze"
+    @test spelled_out(585000, lang = :pt) == "quinhentos e oitenta e cinco mil"
+    @test spelled_out(200, lang = :pt) == "duzentos"
+    @test spelled_out(19, lang = :pt) == "dezanove"
+    @test spelled_out(0.9, lang = :pt) == "nove décimos"
+    @test spelled_out(14, lang = :pt) == "catorze"
+    @test spelled_out(-10, lang = :pt) == "menos dez" 
+    @test spelled_out(-109, lang = :pt) == "menos cento e nove" 
+    @test spelled_out(105, lang = :pt) == "cento e cinco"
 end
 
 nothing
