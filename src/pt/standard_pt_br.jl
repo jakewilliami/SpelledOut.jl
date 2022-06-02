@@ -12,7 +12,7 @@ const pt_BR_1_a_19 =[
     "onze"
     "doze"
     "treze"
-    "catorze"
+    "quatorze"
     "quinze"
     "dezesseis"
     "dezessete"
@@ -43,6 +43,10 @@ const pt_BR_centenas = [
     "oitocentos"
     "novecentos"
 ] 
+
+const centenas_dicionario = Number[
+    200, 300, 400, 500, 600, 700, 800, 900
+]
 
 const pt_BR_multiplos_1e6_singular = [
     "milhão"
