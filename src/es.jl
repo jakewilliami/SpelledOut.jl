@@ -92,7 +92,7 @@ function es_spell_large(_number)
 end
 
 
-function spelled_out_es(number,dict=:standard)
+function spelled_out_es(number; dict=:standard)
     if iszero(number)
         return "cero"
     end

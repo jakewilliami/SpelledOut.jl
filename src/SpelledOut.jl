@@ -55,9 +55,9 @@ function spelled_out(
     elseif lang ∈ (:en_UK, :en_GB, :en_NZ, :en_AU)
         return spelled_out_en(number, british = true, dict = dict)
     elseif lang ∈ (:es,)
-        return spelled_out_es(number, dict)
+        return spelled_out_es(number; dict = dict)
     elseif lang ∈ (:pt_BR,)
-        return spelled_out_pt_br(number, dict)
+        return spelled_out_pt_br(number; dict = dict)
     end
     
     throw(error("We do not support $lang yet.  Please make an issue and someone might be able to help you, or feel free to contribute."))

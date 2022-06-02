@@ -99,7 +99,7 @@ function pt_br_spell_large( _number )
     return res
 end
 
-function spelled_out_pt_br( number, dict = :standard )
+function spelled_out_pt_br( number; dict = :standard )
     if iszero( number )
         return "zero"
     end
