@@ -40,6 +40,15 @@ end
 
 @testset "Portuguese" begin
     @test spelled_out(585000, lang = :pt_BR) == "quinhentos e oitenta e cinco mil"
+    @test spelled_out(0, lang = :pt_BR) == "zero"
+    @test spelled_out(0.9, lang = :pt_BR) == "nove décimos"
+    @test spelled_out(0.09, lang = :pt_BR) == "nove centésimos"
+    @test spelled_out(0.009, lang = :pt_BR) == "nove milésimos"
+    @test spelled_out(0.0009, lang = :pt_BR) == "nove milionésimos"
+    @test spelled_out(-10, lang = :pt_BR) == "menos dez" 
+    @test spelled_out(-109, lang = :pt_BR) == "menos cento e nove" 
+    @test spelled_out(100, lang = :pt_BR) == "cem"
+    @test spelled_out(105, lang = :pt_BR) == "cento e cinco"
 end
 
 nothing
