@@ -10,3 +10,4 @@ Current languages to choose from are:
   - Portuguese 
     - Variants
       - (`:pt_BR`)
+      - (`:pt`)
