@@ -8,7 +8,6 @@ export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 include("en.jl")
 include("es.jl")
 include("pt.jl")
-include("pt_BR.jl")
 
 """
 ```julia
@@ -61,9 +60,9 @@ function spelled_out(
     elseif lang ∈ (:es,)
         return spelled_out_es(number; dict = dict)
     elseif lang ∈ (:pt_BR,)
-        return spelled_out_pt_br(number; dict = dict)
+        return spelled_out_pt(number; portugal = false, dict = dict)
     elseif lang ∈ (:pt,)
-        return spelled_out_pt_pt(number; dict = dict)
+        return spelled_out_pt(number; portugal = true, dict = dict)
     end
     
     throw(error("We do not support $lang yet.  Please make an issue and someone might be able to help you, or feel free to contribute."))
