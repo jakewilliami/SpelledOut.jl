@@ -1,12 +1,13 @@
 module SpelledOut
 
-using DecFP: Dec64
+using DecFP: Dec64, Dec128
 using Formatting: format
 
 export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
 include("en.jl")
 include("es.jl")
+include("pt.jl")
 
 """
 ```julia
@@ -38,6 +39,12 @@ julia> spelled_out(112, lang = :en, dict = :european)
 
 julia> spelled_out(112, lang = :es)
 "ciento doce"
+
+julia> spelled_out(19, lang = :pt_BR)
+"dezenove"
+
+julia> spelled_out(19, lang = :pt)
+"dezanove"
 ```
 """
 function spelled_out(
@@ -51,7 +58,11 @@ function spelled_out(
     elseif lang ∈ (:en_UK, :en_GB, :en_NZ, :en_AU)
         return spelled_out_en(number, british = true, dict = dict)
     elseif lang ∈ (:es,)
-        return spelled_out_es(number,dict)
+        return spelled_out_es(number; dict = dict)
+    elseif lang ∈ (:pt_BR,)
+        return spelled_out_pt(number; portugal = false, dict = dict)
+    elseif lang ∈ (:pt,)
+        return spelled_out_pt(number; portugal = true, dict = dict)
     end
     
     throw(error("We do not support $lang yet.  Please make an issue and someone might be able to help you, or feel free to contribute."))
