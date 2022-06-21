@@ -11,3 +11,7 @@
 
 ## Description
 This is a minimal package for a pure Julia implementation of converting numbers in their Arabic form to numbers in their Anglo-Saxan form.  The process of **spelling out** a number has also been referred to as **set full out**, to write out in **long hand**, and &mdash; as a great mind once suggested &mdash; to **transnumerate**.
+
+## Contributing
+
+Each new language will require a language code to use it.  This code is determined by [https://www.loc.gov/standards/iso639-2/php/langcodes-keyword.php](ISO-639-1).<sup>[[1]](https://www.wikiwand.com/en/ISO_639-1)</sup>
