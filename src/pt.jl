@@ -33,9 +33,9 @@ function pt_spell_1e3( number; short_one = false, portugal::Bool = false )
             elseif portugal
                 unit_text = " e " * pt_PT_1_a_19[ unit ]
             else
-                unit_text =  " e " * pt_BR_1_a_19[ unit ]
+                unit_text = " e " * pt_BR_1_a_19[ unit ]
             end
-            println( pt_BR_dezenas[ dec ] * unit_text )
+            return pt_BR_dezenas[ dec ] * unit_text 
         end
     elseif number ∈ centenas_dicionario
         unit, cent = digits( number, base = 100 )
@@ -77,7 +77,7 @@ function pt_spell_decimal( number, partitive = true; portugal::Bool = false )
     decint = decnum*10^decimal_length
     if partitive
         if decimal_length > 6
-            throw(error("""partitive pronunciation of Brazilian Portuguese decimals is only supported to up to six decimals, the decimal part is $decimal .
+            throw(error("""partitive pronunciation of Portuguese decimals is only supported to up to six decimals, the decimal part is $decimal .
             If you want english-like decimals (zero ponto dois), try using partitive = false.
             If the decimal part seems to differ from the perceived input number, try using big numbers: `big"123.23"`.
             """))
