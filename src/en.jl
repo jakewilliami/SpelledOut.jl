@@ -69,7 +69,7 @@ function large_convert_en(number::Integer; british::Bool = false)
     return String(take!(word_buf))
 end
 
-function _spelled_out_en!(io::IOBuffer, number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
+function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # default to :modern
     if isequal(dict, :british)
         scale_numbers = _scale_traditional_british
@@ -81,27 +81,27 @@ function _spelled_out_en!(io::IOBuffer, number_orig::Integer; british::Bool = fa
         error("Unrecognized dict value: $dict")
     end
     
-    if number_orig < 0
+    if number_norm < 0
         write(io, "negative ")
     end
-    
-    number = big(number_orig)
-    number = abs(number)
 	
-    if number > limit - 1
+    if number_norm > limit - 1
         error("""SpelledOut.jl does not support numbers larger than $(limit_str * " - 1").  Sorry about that!""")
     end
     
     
-    if number < 100
-        _small_convert_en!(io, number)
+    if number_norm < 100
+        _small_convert_en!(io, number_norm)
         return io
     end
     
-    if number < 1000
-        _large_convert_en!(io, number, british=british)
+    if number_norm < 1000
+        _large_convert_en!(io, number_norm, british=british)
         return io
     end
+    
+    number = big(number_norm)
+    number = abs(number)
     
     for v in 0:length(scale_numbers)
         d_idx = v
