@@ -13,14 +13,16 @@ function small_convert_en(number::Integer; british::Bool = false, dict::Symbol =
         return _small_numbers[number + 1]
     end
     
-    for (v, d_cap) in enumerate(_tens)
+    word_buf = IOBuffer()
+    for (v, d̂) in enumerate(_tens)
         d_number = BigInt(20 + 10 * (v - 1))
         
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
-                return d_cap * "-" * _small_numbers[mod(number, 10) + 1]
+                print(word_buf, d̂, '-', _small_numbers[mod(number, 10) + 1])
+                return String(take!(word_buf))
             end
-            return d_cap
+            return d̂
         end
     end
     
@@ -30,6 +32,7 @@ end
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
+# TODO: make more efficient (#2)
 function large_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # define scale type
     word_buf = IOBuffer()
@@ -37,25 +40,26 @@ function large_convert_en(number::Integer; british::Bool = false, dict::Symbol =
     modulus = mod(number, 100)
     
     if divisor > 0
-        print(word_buf, _small_numbers[divisor + 1], " hundred")
+        write(word_buf, _small_numbers[divisor + 1], " hundred")
         if modulus > 0
-            print(word_buf, ' ')
+            write(word_buf, ' ')
         end
     end
 
     if british
-        if ! iszero(divisor) && ! iszero(modulus)
-            print(word_buf, "and ")
+        if !iszero(divisor) && !iszero(modulus)
+            write(word_buf, "and ")
         end
     end
     
     if modulus > 0
-        print(word_buf, small_convert_en(modulus, british=british, dict=dict))
+        write(word_buf, small_convert_en(modulus, british=british, dict=dict))
     end
     
     return String(take!(word_buf))
 end
 
+# TODO: make more efficient (#1)
 function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # default to :modern
     if isequal(dict, :british)
@@ -69,7 +73,7 @@ function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbo
     
     word_buf = IOBuffer()
     if number_orig < 0
-        print(word_buf, "negative ")
+        write(word_buf, "negative ")
     end
     
     number = big(number_orig)
@@ -82,13 +86,13 @@ function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbo
     
     if number < 100
         word = small_convert_en(number, british=british, dict=dict)
-        print(word_buf, word)
+        write(word_buf, word)
         return String(take!(word_buf))
     end
     
     if number < 1000
         word = large_convert_en(number, british=british, dict=dict)
-        print(word_buf, word)
+        write(word_buf, word)
         return String(take!(word_buf))
     end
     
@@ -103,8 +107,8 @@ function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbo
             l, r = divrem(number, modulus)
             
             word = large_convert_en(l, british=british, dict=dict)
-            print(word_buf, word, " ", scale_numbers[d_idx - 1])            
-            r > 0 && print(word_buf, ", ", spelled_out_en(r, british=british, dict=dict))
+            write(word_buf, word, " ", scale_numbers[d_idx - 1])            
+            r > 0 && write(word_buf, ", ", spelled_out_en(r, british=british, dict=dict))
             
             return String(take!(word_buf))
         end
@@ -131,15 +135,15 @@ function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol =
     word_buf = IOBuffer()
     firstpart = reverse(last(split(reverse(s), _lastsplit, limit = 2)))
     if firstpart != word
-        print(word_buf, firstpart, _lastsplit)
+        write(word_buf, firstpart, _lastsplit)
     end
     
     if haskey(irregular, word)
-        print(word_buf, irregular[word])
+        write(word_buf, irregular[word])
     elseif word[end] == 'y'
-        print(word_buf, word[1:end-1], ysuffix)
+        write(word_buf, word[1:end-1], ysuffix)
     else
-        print(word_buf, word, suffix)
+        write(word_buf, word, suffix)
     end
     
     return String(take!(word_buf))
