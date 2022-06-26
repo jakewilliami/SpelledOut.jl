@@ -7,60 +7,70 @@ include(joinpath(@__DIR__, "en", "ordinal_dictionaries.jl"))
 include(joinpath(@__DIR__, "en", "utils.jl"))
     
 # convert a value < 100 to English.
-function small_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
+function _small_convert_en!(io::IOBuffer, number::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # define scale type
     if number < 20
-        return _small_numbers[number + 1]
+        write(io, _small_numbers[number + 1])
+        return io
     end
     
-    word_buf = IOBuffer()
     for (v, d̂) in enumerate(_tens)
         d_number = BigInt(20 + 10 * (v - 1))
         
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
-                print(word_buf, d̂, '-', _small_numbers[mod(number, 10) + 1])
-                return String(take!(word_buf))
+                write(io, d̂, '-', _small_numbers[mod(number, 10) + 1])
+                return io
             end
-            return d̂
+            write(io, d̂)
+            return io
         end
     end
     
-    return nothing
+    return io
+end
+
+function small_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
+    word_buf = IOBuffer()
+    _small_convert_en!(word_buf, number; british=british, dict=dict)
+    return String(take!(word_buf))
 end
 
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-# TODO: make more efficient (#2)
-function large_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
+function _large_convert_en!(io::IOBuffer, number::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # define scale type
-    word_buf = IOBuffer()
     divisor = div(number, 100)
     modulus = mod(number, 100)
     
     if divisor > 0
-        write(word_buf, _small_numbers[divisor + 1], " hundred")
+        write(io, _small_numbers[divisor + 1], " hundred")
         if modulus > 0
-            write(word_buf, ' ')
+            write(io, ' ')
         end
     end
 
     if british
         if !iszero(divisor) && !iszero(modulus)
-            write(word_buf, "and ")
+            write(io, "and ")
         end
     end
     
     if modulus > 0
-        write(word_buf, small_convert_en(modulus, british=british, dict=dict))
+        _small_convert_en!(io, modulus, british=british, dict=dict)
     end
     
+    return io
+end
+
+function large_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
+    word_buf = IOBuffer()
+    _large_convert_en!(word_buf, number; british=british, dict=dict)
     return String(take!(word_buf))
 end
 
-# TODO: make more efficient (#1)
-function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
+function _spelled_out_en!(io::IOBuffer, number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # default to :modern
     if isequal(dict, :british)
         scale_numbers = _scale_traditional_british
@@ -71,9 +81,8 @@ function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbo
         error("Unrecognized dict value: $dict")
     end
     
-    word_buf = IOBuffer()
     if number_orig < 0
-        write(word_buf, "negative ")
+        write(io, "negative ")
     end
     
     number = big(number_orig)
@@ -85,18 +94,14 @@ function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbo
     
     
     if number < 100
-        word = small_convert_en(number, british=british, dict=dict)
-        write(word_buf, word)
-        return String(take!(word_buf))
+        _small_convert_en!(io, number, british=british, dict=dict)
+        return io
     end
     
     if number < 1000
-        word = large_convert_en(number, british=british, dict=dict)
-        write(word_buf, word)
-        return String(take!(word_buf))
+        _large_convert_en!(io, number, british=british, dict=dict)
+        return io
     end
-    
-    tmp_word_buf = IOBuffer()
     
     for v in 0:length(scale_numbers)
         d_idx = v
@@ -106,15 +111,24 @@ function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbo
             modulus = BigInt(big(1000)^(d_idx - 1))
             l, r = divrem(number, modulus)
             
-            word = large_convert_en(l, british=british, dict=dict)
-            write(word_buf, word, " ", scale_numbers[d_idx - 1])            
-            r > 0 && write(word_buf, ", ", spelled_out_en(r, british=british, dict=dict))
+            _large_convert_en!(io, l, british=british, dict=dict)
+            write(io, " ", scale_numbers[d_idx - 1])   
+            if r > 0
+                write(io, ", ")
+                _spelled_out_en!(io, r, british=british, dict=dict)
+            end
             
-            return String(take!(word_buf))
+            return io
         end
     end
     
     error("Unreachable")
+end
+
+function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
+    word_buf = IOBuffer()
+    _spelled_out_en!(word_buf, number_orig; british=british, dict=dict)
+    return String(take!(word_buf))
 end
 
 # Need to print ordinal numbers for the irrational printing
