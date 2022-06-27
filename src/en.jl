@@ -67,7 +67,7 @@ end
 
 function large_convert_en(number::Integer; british::Bool = false)
     word_buf = IOBuffer()
-    _large_convert_en!(word_buf, number; british=british)
+    _large_convert_en!(word_buf, number; british = british)
     return String(take!(word_buf))
 end
 
@@ -98,7 +98,7 @@ function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = fa
     end
     
     if number_norm < 1000
-        _large_convert_en!(io, number_norm, british=british)
+        _large_convert_en!(io, number_norm, british = british)
         return io
     end
     
@@ -112,11 +112,11 @@ function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = fa
             modulus = big(1000)^(d_idx - 1)
             l, r = divrem(number, modulus)
             
-            _large_convert_en!(io, l, british=british)
+            _large_convert_en!(io, l, british = british)
             print(io, " ", scale_numbers[d_idx - 1])   
             if r > 0
                 print(io, ", ")
-                _spelled_out_en!(io, r, british=british, dict=dict)
+                _spelled_out_en!(io, r, british = british, dict = dict)
             end
             
             return io
@@ -128,13 +128,15 @@ end
 
 function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
     word_buf = IOBuffer()
-    _spelled_out_en!(word_buf, number_orig; british=british, dict=dict)
+    _spelled_out_en!(word_buf, number_orig; british = british, dict = dict)
     return String(take!(word_buf))
 end
 
 # Need to print ordinal numbers for the irrational printing
 function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
-    s = spelled_out_en(number, british = british, dict = dict)
+    word_buf = IOBuffer()
+    _spelled_out_en!(word_buf, number, british = british, dict = dict)
+    s = String(take!(word_buf))
 	
 	lastword = lastsplit(isspace, s)
 	redolast = lastsplit('-', lastword)
@@ -147,8 +149,8 @@ function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol =
         word = lastword
     end
     
-    word_buf = IOBuffer()
-    firstpart = reverse(last(split(reverse(s), _lastsplit, limit = 2)))
+    firstpart = firstlastsplit(_lastsplit, s)
+
     if firstpart != word
         print(word_buf, firstpart, _lastsplit)
     end
@@ -169,14 +171,15 @@ function decimal_convert_en(number::AbstractString; british::Bool = false, dict:
     # decimal, whole = modf(number)
     # whole = round(BigInt, whole)
     whole, decimal = split(number, ".")
-    word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
-    # word = spelled_out_en(whole, british=british, dict=dict) * string(" point")
+    word_buf = IOBuffer()
+    _spelled_out_en!(word_buf, parse(BigInt, whole), british = british, dict = dict)
+    print(word_buf, " point")
     
     for i in decimal
-        word = word * " " * _small_number_dictionary[i]
+        print(word_buf, ' ', _small_number_dictionary[i])
     end
     
-    return word
+    return String(take!(word_buf))
 end
 
 function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
@@ -208,19 +211,19 @@ end
 
 # Spell out complex numbers
 function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :modern)
-    return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict=dict) * " imaginaries"
+    return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict = dict) * " imaginaries"
 end
 
 function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = :modern)
-		_num, _den = number.num, number.den
-        
-        # return the number itself if the denomimator is one
-		isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
-        
-		word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
-        
-        # account for pluralisation
-		return isone(_num) ? word : word * "s"
+	_num, _den = number.num, number.den
+    
+    # return the number itself if the denomimator is one
+	isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
+    
+	word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
+    
+    # account for pluralisation
+	return isone(_num) ? word : word * "s"
 end
 
 function spelled_out_en(number::AbstractIrrational; british::Bool = false, dict::Symbol = :modern)

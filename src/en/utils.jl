@@ -3,6 +3,11 @@ function lastsplit(predicate, s::S) where {S <: AbstractString}
     return isnothing(i) ? SubString(s) : SubString(s, nextind(s, i))
 end
 
+function firstlastsplit(predicate, s::S) where {S <: AbstractString}
+    i = findlast(predicate, s)
+    return isnothing(i) ? SubString(s) : SubString(s, 1, prevind(s, i))
+end
+
 Base.findall(c::Char, s::S) where {S <: AbstractString} =
     Int[only(i) for i in findall(string(c), s)]
 
