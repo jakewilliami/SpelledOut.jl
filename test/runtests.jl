@@ -1,4 +1,3 @@
-# include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl")); using .SpelledOut
 using Test
 using SpelledOut
 
@@ -61,4 +60,4 @@ end
     @test spelled_out(105, lang = :pt) == "cento e cinco"
 end
 
-nothing
+
