@@ -30,4 +30,13 @@ Each new language will require a language code to use it.  This code is determin
 
 When contributing, you should add a file and a directory: `src/<iso-639-1-lang-code>.jl`, and `src/<iso-639-1-lang-code>/`.  Within the latter, this is where you should store any language-specific dictionaries.
 
+When implementing the main function for your language (typically called `spelled_out_<iso-639-1-lang-code>`), consider implementing methods on this function for the following types:
+  - `Integer`
+  - `Rational`
+  - `Float64`
+  - `Complex`
+
+You can also add a fallback method and throw an error, but this should be caught by a `MethodError` anyway.  Now you can add to the main [`SpelledOut.jl`](src/SpelledOut.jl) function, in which you can add a branch for your language (following the trend).
+
 Finally, ensure you update the documentation for [Supported Languages](https://jakewilliami.github.io/SpelledOut.jl/dev/supported_languages/#Supported-Languages).
+
