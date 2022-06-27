@@ -13,13 +13,15 @@ function _small_convert_en!(io::IOBuffer, number::Integer)
         return io
     end
     
+    m = mod(number, 10)
+    
     for (v, d̂) in enumerate(_tens)
-        d_number = BigInt(20 + 10 * (v - 1))
+        d = 20 + 10 * (v - 1)
         
-        if d_number + 10 > number
-            if mod(number, 10) ≠ 0
-                sn = _small_numbers[mod(number, 10) + 1]
-                print(io, d̂, '-', sn)
+        if d + 10 > number
+            if m ≠ 0
+                n = _small_numbers[m + 1]
+                print(io, d̂, '-', n)
                 return io
             end
             print(io, d̂)
@@ -100,15 +102,14 @@ function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = fa
         return io
     end
     
-    number = big(number_norm)
-    number = abs(number)
+    number = abs(number_norm)
     
     for v in 0:length(scale_numbers)
         d_idx = v
-        d_number = BigInt(round(big(1000)^v))
+        d_number = round(big(1000)^v)
         
         if d_number > number
-            modulus = BigInt(big(1000)^(d_idx - 1))
+            modulus = big(1000)^(d_idx - 1)
             l, r = divrem(number, modulus)
             
             _large_convert_en!(io, l, british=british)
