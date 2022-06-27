@@ -9,7 +9,7 @@ include(joinpath(@__DIR__, "en", "utils.jl"))
 # convert a value < 100 to English.
 function _small_convert_en!(io::IOBuffer, number::Integer)
     if number < 20
-        write(io, _small_numbers[number + 1])
+        print(io, _small_numbers[number + 1])
         return io
     end
     
@@ -19,10 +19,10 @@ function _small_convert_en!(io::IOBuffer, number::Integer)
         if d_number + 10 > number
             if mod(number, 10) ≠ 0
                 sn = _small_numbers[mod(number, 10) + 1]
-                write(io, d̂, '-', sn)
+                print(io, d̂, '-', sn)
                 return io
             end
-            write(io, d̂)
+            print(io, d̂)
             return io
         end
     end
@@ -44,15 +44,15 @@ function _large_convert_en!(io::IOBuffer, number::Integer; british::Bool = false
     modulus = mod(number, 100)
     
     if divisor > 0
-        write(io, _small_numbers[divisor + 1], " hundred")
+        print(io, _small_numbers[divisor + 1], " hundred")
         if modulus > 0
-            write(io, ' ')
+            print(io, ' ')
         end
     end
 
     if british
         if !iszero(divisor) && !iszero(modulus)
-            write(io, "and ")
+            print(io, "and ")
         end
     end
     
@@ -82,7 +82,7 @@ function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = fa
     end
     
     if number_norm < 0
-        write(io, "negative ")
+        print(io, "negative ")
     end
 	
     if number_norm > limit - 1
@@ -112,9 +112,9 @@ function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = fa
             l, r = divrem(number, modulus)
             
             _large_convert_en!(io, l, british=british)
-            write(io, " ", scale_numbers[d_idx - 1])   
+            print(io, " ", scale_numbers[d_idx - 1])   
             if r > 0
-                write(io, ", ")
+                print(io, ", ")
                 _spelled_out_en!(io, r, british=british, dict=dict)
             end
             
@@ -149,15 +149,15 @@ function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol =
     word_buf = IOBuffer()
     firstpart = reverse(last(split(reverse(s), _lastsplit, limit = 2)))
     if firstpart != word
-        write(word_buf, firstpart, _lastsplit)
+        print(word_buf, firstpart, _lastsplit)
     end
     
     if haskey(irregular, word)
-        write(word_buf, irregular[word])
+        print(word_buf, irregular[word])
     elseif word[end] == 'y'
-        write(word_buf, word[1:end-1], ysuffix)
+        print(word_buf, word[1:end-1], ysuffix)
     else
-        write(word_buf, word, suffix)
+        print(word_buf, word, suffix)
     end
     
     return String(take!(word_buf))
