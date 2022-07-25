@@ -26,7 +26,7 @@ julia> spelled_out(1234, lang = :en_UK);
 See [here](https://jakewilliami.github.io/SpelledOut.jl/dev/supported_languages/#Supported-Languages) for a list of supported languages.
 
 ## Contributing
-Each new language will require a language code to use it.  This code is determined by [https://www.loc.gov/standards/iso639-2/php/langcodes-keyword.php](ISO-639-1).<sup>[[1]](https://www.wikiwand.com/en/ISO_639-1)</sup>
+Each new language will require a language code to use it.  This code is determined by [ISO-639-1](https://www.loc.gov/standards/iso639-2/php/langcodes-keyword.php).<sup>[[1]](https://www.wikiwand.com/en/ISO_639-1)</sup>
 
 When contributing, you should add a file and a directory: `src/<iso-639-1-lang-code>.jl`, and `src/<iso-639-1-lang-code>/`.  Within the latter, this is where you should store any language-specific dictionaries.
 
