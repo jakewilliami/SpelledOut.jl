@@ -18,12 +18,30 @@ function small_convert_mi(n::I) where {I <: Integer}
     @assert(n < 1000, _fn_bounds_err_msg(n, "< 1000", Base.StackTraces.stacktrace()[1].func))
     # 11, 12, ..., 19
     n < 20 && return tens_convert_mi(n)
-    # 10, 20, ..., 90
-    s = "$(ones_convert_mi(fld(n, 10))) $(_mi_scale[1])"
-    if iszero(mod(n, 10)) && n < 100
+    
+    # 20, 21, ..., 99
+    if n < 100
+        d, r = divrem(n, 10)
+        s = ones_convert_mi(d) * " " * _mi_ten
+        if !iszero(r)
+            s *= " " * _mi_ma * " " * ones_convert_mi(r)
+        end
         return s
     end
     
+    # 100, 101, ..., 999
+    d, r = divrem(n, 100)
+    s = ones_convert_mi(d)
+    if isone(d)
+        s = "ko" * s  # _ko_tahi; i.e., _mi_100
+    end
+    s *= " " * _mi_scale[floor(Int, log10(n))]
+    if !iszero(r)
+        s *= " " * spelled_out_mi(r)
+    end
+    return s
+    
+    # Don't know what I was doing with this code below!
     s *= " $_mi_ma "
     # n′ = fld(n, 10)
     n′ = mod(n, 10)
