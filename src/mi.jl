@@ -15,7 +15,7 @@ function tens_convert_mi(n::I) where {I <: Integer}
 end
 
 function small_convert_mi(n::I) where {I <: Integer}
-    @assert(n < 1000, _fn_bounds_err_msg(n, "< 1000", Base.StackTraces.stacktrace()[1].func))
+    # @assert(n < 1000, _fn_bounds_err_msg(n, "< 1000", Base.StackTraces.stacktrace()[1].func))
     # 11, 12, ..., 19
     n < 20 && return tens_convert_mi(n)
     
@@ -62,7 +62,28 @@ function spelled_out_mi(n::I) where {I <: Integer}
     # 1, 2, ..., 10
     n ≤ 10 && return ones_convert_mi(n)
     # 11, 12, ..., 999
-    n < 1000 && return small_convert_mi(n)
+    # return small_convert_mi(n)
+    # n < 1000 && return small_convert_mi(n)
     # 1000, ...
-    error("not yet implemented")
+
+    n < 20 && return tens_convert_mi(n)
+    
+    # 20, 21, ..., 99
+    if n < 100
+        d, r = divrem(n, 10)
+        s = ones_convert_mi(d) * " " * _mi_ten
+        if !iszero(r)
+            s *= " " * _mi_ma * " " * ones_convert_mi(r)
+        end
+        return s
+    end
+    
+    # 100, 101, ..., 999
+    d, r = divrem(n, 100)
+    s = isone(d) || d == 10 ? _mi_100 : ones_convert_mi(d)
+    s *= " " * _mi_scale[floor(Int, log10(n))]
+    if !iszero(r)
+        s *= " " * spelled_out_mi(r)
+    end
+    return s
 end
