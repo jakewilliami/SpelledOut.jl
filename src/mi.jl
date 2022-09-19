@@ -1,17 +1,21 @@
 include(joinpath(@__DIR__, "mi", "standard_dictionary_numbers_mi.jl"))
 
+_fn_bounds_err_msg(n::I, bounds::String, fname::Symbol) where {I <: Integer} = 
+    "The internal function \"$fname\" should only be used for numbers $bounds; number provided: $n"
+# _fn_bounds_err_msg(, Base.StackTraces.stacktrace()[1].func)  # Get current function name using metaprogramming
+
 function ones_convert_mi(n::I) where {I <: Integer}
-    @assert(n ≤ 10, "The internal function \"ones_convert_mi\" should only be used for numbers ≤ 10; number provided: $n")
+    @assert(n ≤ 10, _fn_bounds_err_msg(n, "≤ 10", Base.StackTraces.stacktrace()[1].func))
     return _mi_small_numbers[n + 1]
 end
 
 function tens_convert_mi(n::I) where {I <: Integer}
-    @assert(10 < n < 20, "The internal function \"tens_convert_mi\" should only be used for numbers 10 < n < 20; number provided: $n")
+    @assert(10 < n < 20, _fn_bounds_err_msg(n, "10 < n < 20", Base.StackTraces.stacktrace()[1].func))
     return "$_mi_ten $_mi_ma $(ones_convert_mi(n - 10))"
 end
 
 function small_convert_mi(n::I) where {I <: Integer}
-    @assert(n < 1000, "The internal function \"small_convert_mi\" should only be used for numbers < 1000; number provided: $n")
+    @assert(n < 1000, _fn_bounds_err_msg(n, "< 1000", Base.StackTraces.stacktrace()[1].func))
     # 11, 12, ..., 19
     n < 20 && return tens_convert_mi(n)
     # 10, 20, ..., 90
