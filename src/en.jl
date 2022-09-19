@@ -1,157 +1,169 @@
+# dictionaries
 include(joinpath(@__DIR__, "en", "standard_dictionary_numbers_extended.jl"))
 include(joinpath(@__DIR__, "en", "large_standard_dictionary_numbers_extended.jl"))
 include(joinpath(@__DIR__, "en", "ordinal_dictionaries.jl"))
+
+# utils
+include(joinpath(@__DIR__, "en", "utils.jl"))
     
 # convert a value < 100 to English.
-function small_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
-    scale_numbers = _scale_modern # define scale type
+function _small_convert_en!(io::IOBuffer, number::Integer)
     if number < 20
-        word = _small_numbers[number + 1]
-        
-        return word
+        print(io, _small_numbers[number + 1])
+        return io
     end
     
-    v = 0
-    while v < length(_tens)
-        d_cap = _tens[v + 1]
-        d_number = BigInt(20 + 10 * v)
+    m = mod(number, 10)
+    
+    for (v, d̂) in enumerate(_tens)
+        d = 20 + 10 * (v - 1)
         
-        if d_number + 10 > number
-            if mod(number, 10) ≠ 0
-                word = d_cap * "-" * _small_numbers[mod(number, 10) + 1]
-                
-                return word
+        if d + 10 > number
+            if m ≠ 0
+                n = _small_numbers[m + 1]
+                print(io, d̂, '-', n)
+                return io
             end
-
-            return d_cap
+            print(io, d̂)
+            return io
         end
-        v += 1
     end
+    
+    return io
+end
+
+function small_convert_en(number::Integer)
+    word_buf = IOBuffer()
+    _small_convert_en!(word_buf, number)
+    return String(take!(word_buf))
 end
 
 # convert a value < 1000 to english, special cased because it is the level that excludes
 # the < 100 special case.  The rest are more general.  This also allows you to get
 # strings in the form of "forty-five hundred" if called directly.
-function large_convert_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
-    scale_numbers = _scale_modern # define scale type
-    word = string() # initiate empty string
+function _large_convert_en!(io::IOBuffer, number::Integer; british::Bool = false)
     divisor = div(number, 100)
     modulus = mod(number, 100)
     
     if divisor > 0
-        word = _small_numbers[divisor + 1] * " hundred"
+        print(io, _small_numbers[divisor + 1], " hundred")
         if modulus > 0
-            word = word * " "
+            print(io, ' ')
         end
     end
 
     if british
-        if ! iszero(divisor) && ! iszero(modulus)
-            word = word * "and "
+        if !iszero(divisor) && !iszero(modulus)
+            print(io, "and ")
         end
     end
     
     if modulus > 0
-        word = word * small_convert_en(modulus, british=british, dict=dict)
+        _small_convert_en!(io, modulus)
     end
     
-    return word
+    return io
 end
 
-function spelled_out_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
+function large_convert_en(number::Integer; british::Bool = false)
+    word_buf = IOBuffer()
+    _large_convert_en!(word_buf, number; british = british)
+    return String(take!(word_buf))
+end
+
+function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = false, dict::Symbol = :modern)
     scale_numbers = _scale_modern # default to :modern
     if isequal(dict, :british)
         scale_numbers = _scale_traditional_british
     elseif isequal(dict, :european)
         scale_numbers = _scale_traditional_european
     elseif isequal(dict, :modern)
+        # This is the default condition
     else
-        throw(error("unrecognized dict value: $dict"))
+        error("Unrecognized dict value: $dict")
     end
     
-    number = big(number)
-    isnegative = false
-    if number < 0
-        isnegative = true
+    if number_norm < 0
+        print(io, "negative ")
+    end
+	
+    if number_norm > limit - 1
+        error("""SpelledOut.jl does not support numbers larger than $(limit_str * " - 1").  Sorry about that!""")
     end
     
-    number = abs(number)
-    if number > limit - 1
-        throw(error("""SpelledOut.jl does not support numbers larger than $(limit_str * " - 1").  Sorry about that!"""))
+    
+    if number_norm < 100
+        _small_convert_en!(io, number_norm)
+        return io
     end
     
-    if number < 100
-        word = small_convert_en(number, british=british, dict=dict)
-        
-        if isnegative
-            word = "negative " * word
-        end
-        
-        return word
+    if number_norm < 1000
+        _large_convert_en!(io, number_norm, british = british)
+        return io
     end
     
-    if number < 1000
-        word = large_convert_en(number, british=british, dict=dict)
-        
-        if isnegative
-            word = "negative " * word
-        end
-        
-        return word
-    end
+    number = abs(number_norm)
     
-    v = 0
-    while v ≤ length(scale_numbers)
+    for v in 0:length(scale_numbers)
         d_idx = v
-        d_number = BigInt(round(big(1000)^v))
+        d_number = round(big(1000)^v)
         
         if d_number > number
-            modulus = BigInt(big(1000)^(d_idx - 1))
+            modulus = big(1000)^(d_idx - 1)
             l, r = divrem(number, modulus)
-            word = large_convert_en(l, british=british, dict=dict) * " " * scale_numbers[d_idx - 1]
             
+            _large_convert_en!(io, l, british = british)
+            print(io, " ", scale_numbers[d_idx - 1])   
             if r > 0
-                word = word * ", " * spelled_out_en(r, british=british, dict=dict)
+                print(io, ", ")
+                _spelled_out_en!(io, r, british = british, dict = dict)
             end
             
-            if isnegative
-                word = "negative " * word
-            end
-            
-            return word
+            return io
         end
-        
-        v += 1
     end
+    
+    error("Unreachable")
+end
+
+function spelled_out_en(number_orig::Integer; british::Bool = false, dict::Symbol = :modern)
+    word_buf = IOBuffer()
+    _spelled_out_en!(word_buf, number_orig; british = british, dict = dict)
+    return String(take!(word_buf))
 end
 
 # Need to print ordinal numbers for the irrational printing
 function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol = :modern)
-    s = spelled_out_en(number, british = british, dict = dict)
-
-    lastword = split(s)[end]
-    redolast = split(lastword, "-")[end]
+    word_buf = IOBuffer()
+    _spelled_out_en!(word_buf, number, british = british, dict = dict)
+    s = String(take!(word_buf))
+	
+	lastword = lastsplit(isspace, s)
+	redolast = lastsplit('-', lastword)
 
     if redolast != lastword
-        lastsplit = "-"
+        _lastsplit = '-'
         word = redolast
     else
-        lastsplit = " "
+        _lastsplit = ' '
         word = lastword
     end
+    
+    firstpart = firstlastsplit(_lastsplit, s)
 
-    firstpart = reverse(split(reverse(s), lastsplit, limit = 2)[end])
-    firstpart = (firstpart == word) ? string() : firstpart * lastsplit
-
-    if haskey(irregular, word)
-        word = irregular[word]
-    elseif word[end] == 'y'
-        word = word[1:end-1] * ysuffix
-    else
-        word = word * suffix
+    if firstpart != word
+        print(word_buf, firstpart, _lastsplit)
     end
-
-    return firstpart * word
+    
+    if haskey(irregular, word)
+        print(word_buf, irregular[word])
+    elseif word[end] == 'y'
+        print(word_buf, word[1:end-1], ysuffix)
+    else
+        print(word_buf, word, suffix)
+    end
+    
+    return String(take!(word_buf))
 end
 
 # This method is an internal method used for spelling out floats
@@ -159,14 +171,15 @@ function decimal_convert_en(number::AbstractString; british::Bool = false, dict:
     # decimal, whole = modf(number)
     # whole = round(BigInt, whole)
     whole, decimal = split(number, ".")
-    word = spelled_out_en(parse(BigInt, whole), british=british, dict=dict) * string(" point")
-    # word = spelled_out_en(whole, british=british, dict=dict) * string(" point")
+    word_buf = IOBuffer()
+    _spelled_out_en!(word_buf, parse(BigInt, whole), british = british, dict = dict)
+    print(word_buf, " point")
     
     for i in decimal
-        word = word * " " * _small_number_dictionary[i]
+        print(word_buf, ' ', _small_number_dictionary[i])
     end
     
-    return word
+    return String(take!(word_buf))
 end
 
 function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symbol = :modern)
@@ -198,19 +211,19 @@ end
 
 # Spell out complex numbers
 function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :modern)
-    return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict=dict) * " imaginaries"
+    return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict = dict) * " imaginaries"
 end
 
 function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = :modern)
-		_num, _den = number.num, number.den
-        
-        # return the number itself if the denomimator is one
-		isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
-        
-		word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
-        
-        # account for pluralisation
-		return isone(_num) ? word : word * "s"
+	_num, _den = number.num, number.den
+    
+    # return the number itself if the denomimator is one
+	isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
+    
+	word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
+    
+    # account for pluralisation
+	return isone(_num) ? word : word * "s"
 end
 
 function spelled_out_en(number::AbstractIrrational; british::Bool = false, dict::Symbol = :modern)
