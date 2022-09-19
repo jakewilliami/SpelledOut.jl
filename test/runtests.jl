@@ -1,4 +1,3 @@
-# include(joinpath(dirname(dirname(@__FILE__)), "src", "SpelledOut.jl")); using .SpelledOut
 using Test
 using SpelledOut
 
@@ -34,11 +33,35 @@ using SpelledOut
     @test spelled_out(40//6, lang = :en_UK)                        == "twenty thirds"
 end
 
-
-
 @testset "Spanish" begin
     @test spelled_out(585000, lang = :es) == "quinientos ochenta y cinco mil"
-   
+end
+
+@testset "Portuguese" begin
+    @testset "Standard Portuguese" begin
+        @test spelled_out(585000, lang = :pt) == "quinhentos e oitenta e cinco mil"
+        @test spelled_out(200, lang = :pt)    == "duzentos"
+        @test spelled_out(19, lang = :pt)     == "dezanove"
+        @test spelled_out(0.9, lang = :pt)    == "nove décimos"
+        @test spelled_out(14, lang = :pt)     == "catorze"
+        @test spelled_out(-10, lang = :pt)    == "menos dez" 
+        @test spelled_out(-109, lang = :pt)   == "menos cento e nove" 
+        @test spelled_out(105, lang = :pt)    == "cento e cinco"
+    end
+    @testset "Brazilian Portuguese" begin
+        @test spelled_out(585000, lang = :pt_BR) == "quinhentos e oitenta e cinco mil"
+        @test spelled_out(0, lang = :pt_BR)      == "zero"
+        @test spelled_out(0.9, lang = :pt_BR)    == "nove décimos"
+        @test spelled_out(0.09, lang = :pt_BR)   == "nove centésimos"
+        @test spelled_out(0.009, lang = :pt_BR)  == "nove milésimos"
+        @test spelled_out(0.0009, lang = :pt_BR) == "nove milionésimos"
+        @test spelled_out(-10, lang = :pt_BR)    == "menos dez" 
+        @test spelled_out(-109, lang = :pt_BR)   == "menos cento e nove" 
+        @test spelled_out(100, lang = :pt_BR)    == "cem"
+        @test spelled_out(105, lang = :pt_BR)    == "cento e cinco"
+        @test spelled_out(19, lang = :pt_BR)     == "dezenove"
+        @test spelled_out(14, lang = :pt_BR)     == "quatorze"
+    end
 end
 
 @testset "Māori" begin
@@ -106,4 +129,3 @@ end
     @test spelled_out(3_000_000_000, lang = :mi) == "toru piriona"
 end
 
-nothing

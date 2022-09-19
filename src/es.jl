@@ -1,15 +1,5 @@
 include(joinpath(@__DIR__, "es", "standard_es.jl"))
 
-#retuns a vector of ints, each of that 
-function split_numbers_10³(num::Integer)
-    digits(num,base=10^3) 
-end
-
-function split_numbers_10⁶(num::Integer)
-    digits(num,base=10^6) 
-end
-
-#function 
 function es_spell_1e3(number,short_one=false)
     if number <= 99 #0 - 99
         if number<30 #1 - 30
@@ -102,7 +92,7 @@ function es_spell_large(_number)
 end
 
 
-function spelled_out_es(number,dict=:standard)
+function spelled_out_es(number; dict=:standard)
     if iszero(number)
         return "cero"
     end
