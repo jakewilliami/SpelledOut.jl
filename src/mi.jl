@@ -36,8 +36,9 @@ function spelled_out_mi(n::I) where {I <: Integer}
     
     # 100, 101, ..., 999
     d, r = divrem(n, 100)
-    s = isone(d) || isone(div(n, 1000)) ? _mi_100 : spelled_out_mi(d)
-    s *= " " * _mi_scale[floor(Int, log10(n))]
+    m = floor(Int, log10(n))
+    s = isone(d) || isone(div(n, 1000)) ? _mi_100 : spelled_out_mi(div(n, 10^m))
+    s *= " " * _mi_scale[m]
     if !iszero(r)
         s *= " " * spelled_out_mi(r)
     end
