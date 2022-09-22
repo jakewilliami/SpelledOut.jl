@@ -34,7 +34,7 @@ function spelled_out_mi(n::I) where {I <: Integer}
         return s
     end
     
-    # 100, 101, ..., 999
+    # 100, 101, ..., 9999
     d, r = divrem(n, 100)
     m = floor(Int, log10(n))
     s = isone(d) || isone(div(n, 1000)) ? _mi_100 : spelled_out_mi(div(n, 10^m))
