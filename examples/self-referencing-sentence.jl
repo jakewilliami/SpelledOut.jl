@@ -85,8 +85,7 @@ function construct_true_pangram()
         # prev_cm == curr_cm && (println(); return String(sentence), i)
         prev_cm == curr_cm && return String(sentence), i
         i += 1
-        # prev_cm = rand_cm(prev_cm, curr_cm, mod(i, 100) == 0)
-        prev_cm = rand_cm(prev_cm, curr_cm)
+        rand_cm!(prev_cm, curr_cm)
     end
     error("unreachable")
 end
@@ -94,19 +93,12 @@ end
 
 # There may occur some cycles of count maps that mean this programme never terminates.  As a result, we calculae the difference between
 function rand_cm!(prev_cm, curr_cm, alphabet = ALPHABET)
-    ans = Dict{Char, Int}()
-    # diffs = cm_diffs(prev_cm, curr_cm)
-
-    diffs = mergewith(-, curr_cm, prev_cm)
-    for c in alphabet
-        δ = diffs[c]
-        # δ = get(diffs, c, 0)
-        # change = rand(0:δ)
-        change = rand(δ < 0 ? (δ:0) : (0:δ))
-        # change = rand(0:abs(δ)) * sign(δ)
-        ans[c] = change + get(prev_cm, c, 0)
+    diffs! = mergewith!() do a, b
+        δ = b - a
+        rand(δ < 0 ? (δ:0) : (0:δ)) + a
     end
-    return ans
+    diffs!(prev_cm, curr_cm)
+    return prev_cm
 end
 
 # Main function: construct true pangram!!
