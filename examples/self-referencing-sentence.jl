@@ -1,84 +1,129 @@
+# note solution may not converge
+# "This sentence has three 'a's, one 'b, two 'c's, two 'd's, thirty-three 'e's, six 'f's, one 'g, seven 'h's, nine 'i's, one 'j, one 'k, one 'l, one 'm, twenty-two 'n's, fifteen 'o's, one 'p, one 'q, seven 'r's, twenty-seven 's's, sixteen 't's, three 'u's, five 'v's, six 'w's, four 'x's, four 'y's, and one 'z."
+
 include(joinpath(dirname(@__DIR__), "src", "SpelledOut.jl"))
 using .SpelledOut
 
-using StatsBase
+using Base: nothing_sentinel, current_logger
 
-struct SentenceCountMap
-    countmap::Dict{Char, Int}
-    s::String
+using StatsBase: countmap, mean
+
+
+const ALPHABET = 'a':'z'
+
+# This sentence has n 'a's, n 'b's, ..., and n 'z's.
+# const STARTING_STR, ENDING_STR = "This pangram contains ", "."
+# const STARTING_STR, ENDING_STR = "This sentence contains ", "."
+# const STARTING_STR, ENDING_STR = "Only a fool would check that this sentence contains ", "."
+# const STARTING_STR, ENDING_STR = "Only a fool would check that this pangram contains ", "."
+const STARTING_STR, ENDING_STR = "Only a fool would check that this pangram contains ", ", and last but not least, exactly one !"
+const MIDDLE_STR, MIDDLE_STR_OXFORD = ", ", ", and "
+# const MIDDLE_STR, MIDDLE_STR_OXFORD = ", ", ", and last but not something, exactly"
+const PLURAL_STR = "s"
+
+
+# there are some letters which never occur in low-valued cardiinals: A,B,C,D,j,K,M,P,Q,Z, so
+# they can be filled in from the initial text directly
+# No letter should have more than fourty occurences of it
+function find_rule_out_chars(alphabet = ALPHABET, upper::Int = 40, lang::Symbol = :en)
+    S = Set{Char}()
+    for n in 1:upper
+        s = spelled_out(n, lang = lang)
+        for c in s
+            push!(S, c)
+        end
+    end
+    return setdiff(alphabet, S)
 end
 
-Base.getindex(d::SentenceCountMap, k::Char) = get(d.countmap, k, 0)
-Base.setindex!(d::SentenceCountMap, v::Int, k::Char) = setindex!(d.countmap, v, k)
-Base.values(d::SentenceCountMap) = values(d.countmap)
-# Base.iterate(d::SentenceCountMap) = iterate(d.countmap)
-# Base.iterate(d::SentenceCountMap, i::Int) = iterate(d.countmap, i)
 
-SentenceCountMap() = 
-    SentenceCountMap(Dict{Char, Int}(c => 0 for c in 'a':'z'), "")
-SentenceCountMap(s::String) = 
-    SentenceCountMap(countmap(filter(∈('a':'z'), lowercase(s))), s)
-
-function construct_sentence(cm::SentenceCountMap)
+# Given a count map (i.e., Dict('a' => 3, 'b' => 1, ...)), construct the pangram
+# TODO: Ignore if zero?  NO!  Because then it wouldn't be a pangram
+function construct_pangram(cm, alphabet = ALPHABET, lang = :en)
     io = IOBuffer()
-    print(io, "this sentence has ")
-    for c in 'a':'z'
-        w = spelled_out(cm[c])
-        print(io, "$w '$c's")
-        c == 'z' || print(io, " and ")
+    print(io, STARTING_STR)
+    for c in alphabet
+        n = get(cm, c, 0)
+        print(io, spelled_out(n, lang = lang))
+        print(io, " '", c)
+        n == 1 ? print(io, '\'') : print(io, '\'', PLURAL_STR)
+        c ∈ ('y', 'z') || print(io, MIDDLE_STR)  # TODO: use last and secondtolast here
+        # c == 'y' && print(io, MIDDLE_STR_OXFORD)
+        c == 'y' && print(io, MIDDLE_STR)
     end
-    return String(take!(io))
+    print(io, ENDING_STR)
+
+    return Char.(take!(io))
 end
 
-function construct_final_sentence_doov()
-    cm = SentenceCountMap()
-    prev = nothing
-    curr = construct_sentence(cm)
-    
+
+# Construct an initial sentence and set the
+# TODO: rename
+function get_static_counts(alphabet = ALPHABET, upper::Int = 40, lang::Symbol = :en)
+    # Construct initial sentence with no values
+    sentence = construct_pangram(Dict{Char, Int}(c => 1 for c in ALPHABET))
+    cm = countmap(sentence)
+
+    # Add constant characters to initial sentence
+    static_chars = find_rule_out_chars(alphabet, upper, lang)
+    cm′ = Dict{Char, Int}(c => (c ∈ static_chars ? cm[c] : 1) for c in ALPHABET)
+    sentence′ = construct_pangram(cm′)
+
+    # println(repr(String(copy(sentence′))))
+    return sentence′
+end
+
+function construct_true_pangram()
+    # prev_cm = get_static_counts(STARTING_STR, ENDING_STR, MIDDLE_STR, PLURAL_STR)  # TODO: make get_static_counts use construct_pangram
+    prev_cm = get_static_counts()
+    prev_cm = Dict{Char, Int}()
+    i = 0
     while true
-        cm = SentenceCountMap(curr)
-        prev = curr
-        curr = construct_sentence(cm)
-        prev == curr && return prev
+        # iszero(mod(i, 100_000)) && print(" $(i)th iteration; ")
+        sentence = construct_pangram(prev_cm)
+        curr_cm = countmap(filter(∈(ALPHABET), sentence))
+        # prev_cm == curr_cm && (println(); return String(sentence), i)
+        prev_cm == curr_cm && return String(sentence), i
+        i += 1
+        # prev_cm = rand_cm(prev_cm, curr_cm, mod(i, 100) == 0)
+        prev_cm = rand_cm(prev_cm, curr_cm)
     end
-    
     error("unreachable")
 end
 
-function construct_final_sentence_bonk()
-    # Create initial state
-    io = IOBuffer()
-    print(io, "this sentence has ")
-    for (i, c) in enumerate('a':'z')
-        print(io, "{{$i}} '$c's")
-        c == 'z' || print(io, " and ")
+
+# There may occur some cycles of count maps that mean this programme never terminates.  As a result, we calculae the difference between
+function rand_cm!(prev_cm, curr_cm, alphabet = ALPHABET)
+    ans = Dict{Char, Int}()
+    # diffs = cm_diffs(prev_cm, curr_cm)
+
+    diffs = mergewith(-, curr_cm, prev_cm)
+    for c in alphabet
+        δ = diffs[c]
+        # δ = get(diffs, c, 0)
+        # change = rand(0:δ)
+        change = rand(δ < 0 ? (δ:0) : (0:δ))
+        # change = rand(0:abs(δ)) * sign(δ)
+        ans[c] = change + get(prev_cm, c, 0)
     end
-    s = String(take!(io))
-    
-    # Construct initial count map and adjust sentence accordingly
-    cm = SentenceCountMap(s)
-    
-    function update!(d::SentenceCountMap, g::Dict{Char, Int})
-        # TODO: this function will only ever _add_ n to the count map,
-        # which is not accurate.  We do still need to account for if, 
-        # for example, 
-        error("not yet implemented")
-        for (c, n) in g
-            d[c] += n
-        end
-        return d
-    end
-    
-    # Update counts
-    # TODO: do this until stabilised
-    curr = copy(cm)
-    for n in values(curr)
-        w = spelled_out(n)
-        update!(cm, countmap(w))
-    end
-    
-    return cm
+    return ans
 end
 
-# println(construct_sentence())
+# Main function: construct true pangram!!
+function main()
+    sentence, i = construct_true_pangram()
+    println("Found the following sentence in $i iterations:")
+    println("    ", sentence)
+    S = Int[]
+    for _ in 1:3
+        S′ = Int[last(construct_true_pangram()) for _ in 1:10]
+        println("(min, max) = ", extrema(S′))
+        println("average = ", mean(S′))
+        append!(S, S′)
+    end
+    println()
+    println("(min, max) = ", extrema(S))
+    println("average = ", mean(S))
+end
 
+# main()
