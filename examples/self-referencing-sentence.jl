@@ -1,4 +1,5 @@
 # note solution may not converge
+# note that while there are certain characters that are static as they are not used in spelling out words, it does not prove beneficial (actually, the opposite) to try to be clever and account for these (see commit )
 # "This sentence has three 'a's, one 'b, two 'c's, two 'd's, thirty-three 'e's, six 'f's, one 'g, seven 'h's, nine 'i's, one 'j, one 'k, one 'l, one 'm, twenty-two 'n's, fifteen 'o's, one 'p, one 'q, seven 'r's, twenty-seven 's's, sixteen 't's, three 'u's, five 'v's, six 'w's, four 'x's, four 'y's, and one 'z."
 
 
@@ -29,22 +30,8 @@ const PLURAL_STR = "s"
 
 ### Helper functions
 
-# there are some letters which never occur in low-valued cardiinals: A,B,C,D,j,K,M,P,Q,Z, so
-# they can be filled in from the initial text directly
-# No letter should have more than fourty occurences of it
-function find_rule_out_chars(alphabet = ALPHABET, upper::Int = 40, lang::Symbol = :en)
-    S = Set{Char}()
-    for n in 1:upper
-        s = spelled_out(n, lang = lang)
-        for c in s
-            push!(S, c)
-        end
-    end
-    return setdiff(alphabet, S)
-end
 
-
-# Given a count map (i.e., Dict('a' => 3, 'b' => 1, ...)), construct the pangram
+# Given a count map (i.e., Dict('a' => 3, 'b' => 1, ...)), construct the pangram ("This sentence contains n 'a's. n 'b's, ...")
 function construct_pangram(cm, alphabet = ALPHABET, lang = :en, use_alt_connector::Bool = false)
     alphabet_len = length(alphabet)
     io = IOBuffer()
@@ -63,23 +50,6 @@ function construct_pangram(cm, alphabet = ALPHABET, lang = :en, use_alt_connecto
 end
 
 
-# Construct an initial sentence and set the
-# TODO: rename
-function get_static_counts(alphabet = ALPHABET, upper::Int = 40, lang::Symbol = :en)
-    # Construct initial sentence with no values
-    sentence = construct_pangram(Dict{Char, Int}(c => 1 for c in ALPHABET))
-    cm = countmap(sentence)
-
-    # Add constant characters to initial sentence
-    static_chars = find_rule_out_chars(alphabet, upper, lang)
-    cm′ = Dict{Char, Int}(c => (c ∈ static_chars ? cm[c] : 1) for c in ALPHABET)
-    sentence′ = construct_pangram(cm′)
-
-    println(repr(String(copy(sentence′))))
-    return countmap(sentence′)
-end
-
-
 # There may occur some cycles of count maps that mean this programme never terminates.  As a result, we calculae the difference between
 function rand_cm!(prev_cm, curr_cm)
     diffs! = mergewith!() do a, b
@@ -94,7 +64,6 @@ end
 ### Main
 
 function construct_true_pangram()
-    # prev_cm = get_static_counts()
     prev_cm = Dict{Char, Int}()
     i = 0
     while true
