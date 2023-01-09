@@ -1,5 +1,5 @@
 # note solution may not converge
-# note that while there are certain characters that are static as they are not used in spelling out words, it does not prove beneficial (actually, the opposite) to try to be clever and account for these (see commit )
+# note that while there are certain characters that are static as they are not used in spelling out words, it does not prove beneficial (actually, the opposite) to try to be clever and account for these (see commit 13f2a62)
 # "This sentence has three 'a's, one 'b, two 'c's, two 'd's, thirty-three 'e's, six 'f's, one 'g, seven 'h's, nine 'i's, one 'j, one 'k, one 'l, one 'm, twenty-two 'n's, fifteen 'o's, one 'p, one 'q, seven 'r's, twenty-seven 's's, sixteen 't's, three 'u's, five 'v's, six 'w's, four 'x's, four 'y's, and one 'z."
 
 
@@ -32,9 +32,9 @@ const PLURAL_STR = "s"
 
 
 # Given a count map (i.e., Dict('a' => 3, 'b' => 1, ...)), construct the pangram ("This sentence contains n 'a's. n 'b's, ...")
-function construct_pangram(cm, alphabet = ALPHABET, lang = :en, use_alt_connector::Bool = false)
+function construct_pangram(io::IO, cm, alphabet = ALPHABET, lang = :en, use_alt_connector::Bool = false)
     alphabet_len = length(alphabet)
-    io = IOBuffer()
+    # io = IOBuffer()
     print(io, STARTING_STR)
     for (i, c) in enumerate(alphabet)
         n = get(cm, c, 0)
@@ -64,11 +64,12 @@ end
 ### Main
 
 function construct_true_pangram()
+    io = IOBuffer()
     prev_cm = Dict{Char, Int}()
     i = 0
     while true
         # iszero(mod(i, 100_000)) && print(" $(i)th iteration; ")
-        sentence = construct_pangram(prev_cm)
+        sentence = construct_pangram(io, prev_cm)
         curr_cm = countmap(filter(∈(ALPHABET), sentence))
         # prev_cm == curr_cm && (println(); return String(sentence), i)
         prev_cm == curr_cm && return String(sentence), i
@@ -95,4 +96,4 @@ function main()
     println("average = ", mean(S))
 end
 
-main()
+# main()
