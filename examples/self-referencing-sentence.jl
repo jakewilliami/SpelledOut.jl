@@ -49,6 +49,7 @@ using .SpelledOut
 
 using Base: nothing_sentinel, current_logger
 
+using ProgressMeter: @showprogress
 using StatsBase
 
 
@@ -58,18 +59,19 @@ const ALPHABET = 'a':'z'
 
 const STARTING_STR = "Only a fool would check that this pangram contains "
 const ENDING_STR = ", and last but not least, exactly one !"
+# const STARTING_STR = "This sentence contains "
+# const ENDING_STR = "."
 const MIDDLE_STR, MIDDLE_STR_OXFORD = ", ", ", and "
 const PLURAL_STR = "s"
 
 
 ### Helper functions
 
-
 # Given a count map (i.e., Dict('a' => 3, 'b' => 1, ...)), construct the autogram ("This
 # sentence contains n 'a's. n 'b's, ...")
 function construct_pangram(
     io::IO,
-    cm::Dict{Char, Int},
+    cm::Dict{Char, Int};
     alphabet = ALPHABET,
     lang = :en,
     use_alt_connector::Bool = false,
@@ -98,7 +100,7 @@ end
 
 ### Main
 
-function construct_autogram()
+function construct_autogram(; use_alt_connector::Bool = false)
     io = IOBuffer()
     prev_cm = Dict{Char, Int}()
     i = 0
@@ -106,7 +108,7 @@ function construct_autogram()
     while true
         # Construct the sentence from the previoud count map and calculate the current count
         # map from that sentence
-        sentence = construct_pangram(io, prev_cm)
+        sentence = construct_pangram(io, prev_cm; use_alt_connector = use_alt_connector)
         curr_cm = countmap(filter(∈(ALPHABET), sentence))
 
         # Return the solution (and the iteration at wich we found it) f one is found (which
@@ -128,11 +130,53 @@ function construct_autogram()
 end
 
 
-function main()
-    sentence, i = construct_autogram()
+function main(; use_alt_connector::Bool = false, get_statistics::Bool = false, num_iterations::Int = 500)
+    sentence, i = construct_autogram(use_alt_connector = use_alt_connector)
     println("Found the following sentence in $i iterations:")
     println("    ", sentence)
+
+    if get_statistics
+        println("\nCalculating iteration statistics...")
+        A = Vector{Int}(undef, num_iterations)
+        @showprogress for i in 1:num_iterations
+            A[i] = last(construct_autogram(use_alt_connector = use_alt_connector))
+        end
+        open("iterations.dat", "w") do io
+            for a in A
+                println(io, a)
+            end
+        end
+        println(summarystats(A))
+    end
 end
 
 
-main()
+main(use_alt_connector = false, get_statistics = true, num_iterations = 3000)
+
+#=
+"The following sentence contains ..." (1,000 iterations)
+Mean:           246,032.861
+Minimum:        303
+1st Quartile:   70,808.5
+Median:         166,773
+3rd Quartile:   352,997.25
+Maximum:        1,613,014
+
+"Only a fool would check that this pangram contains ... and last but not least, exactly
+one !" (1,000 iterations)
+Mean:           210,850.495
+Minimum:        156
+1st Quartile:   58,423.5
+Median:         141,135
+3rd Quartile:   297,830.5
+Maximum:        1,255,652
+
+"Only a fool would check that this pangram contains ... and last but not least, exactly
+one !" (3,000 iterations)
+Mean:           206,901.754333
+Minimum:        98
+1st Quartile:   55,599.25
+Median:         139,265
+3rd Quartile:   289,539.25
+Maximum:        2,318,343
+=#
