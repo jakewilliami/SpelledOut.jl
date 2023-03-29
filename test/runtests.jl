@@ -44,8 +44,8 @@ end
         @test spelled_out(19, lang = :pt)     == "dezanove"
         @test spelled_out(0.9, lang = :pt)    == "nove décimos"
         @test spelled_out(14, lang = :pt)     == "catorze"
-        @test spelled_out(-10, lang = :pt)    == "menos dez" 
-        @test spelled_out(-109, lang = :pt)   == "menos cento e nove" 
+        @test spelled_out(-10, lang = :pt)    == "menos dez"
+        @test spelled_out(-109, lang = :pt)   == "menos cento e nove"
         @test spelled_out(105, lang = :pt)    == "cento e cinco"
     end
     @testset "Brazilian Portuguese" begin
@@ -55,8 +55,8 @@ end
         @test spelled_out(0.09, lang = :pt_BR)   == "nove centésimos"
         @test spelled_out(0.009, lang = :pt_BR)  == "nove milésimos"
         @test spelled_out(0.0009, lang = :pt_BR) == "nove milionésimos"
-        @test spelled_out(-10, lang = :pt_BR)    == "menos dez" 
-        @test spelled_out(-109, lang = :pt_BR)   == "menos cento e nove" 
+        @test spelled_out(-10, lang = :pt_BR)    == "menos dez"
+        @test spelled_out(-109, lang = :pt_BR)   == "menos cento e nove"
         @test spelled_out(100, lang = :pt_BR)    == "cem"
         @test spelled_out(105, lang = :pt_BR)    == "cento e cinco"
         @test spelled_out(19, lang = :pt_BR)     == "dezenove"
@@ -91,7 +91,7 @@ end
     @test spelled_out(22, lang = :mi)            == "rua tekau mā rua"
     @test spelled_out(23, lang = :mi)            == "rua tekau mā toru"
     @test spelled_out(30, lang = :mi)            == "toru tekau"
-    @test spelled_out(35, lang = :mi)            == ""  # TODO
+    @test spelled_out(35, lang = :mi)            == "toru tekau mā rima"  # TODO: check that this is correct
     @test spelled_out(40, lang = :mi)            == "whā tekau"
     @test spelled_out(50, lang = :mi)            == "rima tekau"
     @test spelled_out(60, lang = :mi)            == "ono tekau"
@@ -114,7 +114,7 @@ end
     @test spelled_out(1982, lang = :mi)          == "kotahi mano, iwa rau, waru tekau mā rua"
     @test spelled_out(2000, lang = :mi)          == "rua mano"
     @test spelled_out(2016, lang = :mi)          == "rua mano, tekau mā ono"
-    @test spelled_out(2022, lang = :mi)          == ""  # TODO
+    @test spelled_out(2022, lang = :mi)          == "rua mano, rua tekau mā rua"  # TODO: check that this is correct
     @test spelled_out(3000, lang = :mi)          == "toru mano"
     @test spelled_out(4000, lang = :mi)          == "whā mano"
     @test spelled_out(5000, lang = :mi)          == "rima mano"
@@ -122,10 +122,9 @@ end
     @test spelled_out(7000, lang = :mi)          == "whitu mano"
     @test spelled_out(8000, lang = :mi)          == "waru mano"
     @test spelled_out(9000, lang = :mi)          == "iwa mano"
-    @test spelled_out(9100, lang = :mi)          == ""  # TODO
+    @test spelled_out(9100, lang = :mi)          == "iwa mano, kotahi rau"  # TODO: check that this is correct
     @test spelled_out(10_000, lang = :mi)        == "tekau mano"
     @test spelled_out(1_000_000, lang = :mi)     == "kotahi miriona"
     @test spelled_out(2_000_000, lang = :mi)     == "rua miriona"
     @test spelled_out(3_000_000_000, lang = :mi) == "toru piriona"
 end
-
