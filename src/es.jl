@@ -1,3 +1,5 @@
+# Andrés Riedemann (January, 2021)
+
 include(joinpath(@__DIR__, "es", "standard_es.jl"))
 
 function es_spell_1e3(number,short_one=false)
@@ -22,7 +24,7 @@ function es_spell_1e3(number,short_one=false)
             end
             return es_decenas[dec] * unit_text
         end
-    elseif 100  <= number <= 999 
+    elseif 100  <= number <= 999
         number == 100 && return "cien"
         unit,cent = digits(number,base=100)
         unit_text = es_spell_1e3(unit,short_one)
@@ -78,7 +80,7 @@ function es_spell_large_map(number,i)
     elseif isone(number)
         return "un " * es_multiplos_1e6_singular[i-1]
     else
-        
+
         return es_spell_1e6(number,false) * " " * es_multiplos_1e6_plural[i-1]
     end
 end
@@ -106,14 +108,14 @@ function spelled_out_es(number; dict=:standard)
         end
         return res
     else #with decimals
-        
+
         #delete this when proper separate keywords are implemented
         partitive = true
         _dec,_int = modf(number)
         _int = Dec128(_int)
         if (_int == 0) & !partitive
             intres = "cero"
-            
+
         elseif (_int == 0) & partitive
             intres = ""
         elseif dict in (:standard,:large,:modern)
@@ -123,15 +125,8 @@ function spelled_out_es(number; dict=:standard)
         else
             throw(error("unrecognized dict value: $dict"))
         end
-            
+
         decres = es_spell_decimal(abs(_dec))
         return intres * decres
     end
 end
-
-
-
-
-
-
-

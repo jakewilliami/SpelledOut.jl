@@ -1,3 +1,5 @@
+# Jake Ireland (June, 2022–April, 2023)
+
 include(joinpath(@__DIR__, "mi", "standard_dictionary_numbers_mi.jl"))
 
 # TODO: kotahi vs tahi (https://animations.tewhanake.maori.nz/te-kakano/te-wahanga-tuatahi/30)
