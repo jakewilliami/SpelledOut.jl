@@ -1,15 +1,17 @@
-include(joinpath(@__DIR__, "pt", "standard_pt_br.jl")) 
-include(joinpath(@__DIR__, "pt", "pt_pt.jl")) 
+# Gabriel de Freitas Pereira (May–June, 2022)
+
+include(joinpath(@__DIR__, "pt", "standard_pt_br.jl"))
+include(joinpath(@__DIR__, "pt", "pt_pt.jl"))
 
 ## Implement Spelled Out for Brazilian Portuguese and Portugal Portuguese
 
-#retuns a vector of ints, each of that 
+#retuns a vector of ints, each of that
 function split_numbers_10³( num::Integer )
-    digits( num, base = 10^3)  
+    digits( num, base = 10^3)
 end
 
 function split_numbers_10⁶( num::Integer )
-    digits( num, base = 10^6)  
+    digits( num, base = 10^6)
 end
 
 #function
@@ -20,10 +22,10 @@ function pt_spell_1e3( number; short_one = false, portugal::Bool = false )
             if isone( number ) && short_one
                 return "um"
             elseif portugal
-                return pt_PT_1_a_19[ number ] 
+                return pt_PT_1_a_19[ number ]
             else
-                return pt_BR_1_a_19[ number ] 
-            end  
+                return pt_BR_1_a_19[ number ]
+            end
         else #20-99
             unit, dec = digits( number )
             if isone( unit ) && short_one
@@ -35,19 +37,19 @@ function pt_spell_1e3( number; short_one = false, portugal::Bool = false )
             else
                 unit_text = " e " * pt_BR_1_a_19[ unit ]
             end
-            return pt_BR_dezenas[ dec ] * unit_text 
+            return pt_BR_dezenas[ dec ] * unit_text
         end
     elseif number ∈ centenas_dicionario
         unit, cent = digits( number, base = 100 )
         unit_text = pt_spell_1e3( unit; short_one )
         return pt_BR_centenas[ cent ]
     elseif portugal == false & 100 <= number <= 999
-        number == 100 && return "cem" 
+        number == 100 && return "cem"
         unit, cent = digits( number, base = 100 )
         unit_text = pt_spell_1e3( unit; short_one )
         return pt_BR_centenas[ cent ] * " e "  * unit_text
     elseif portugal & 100 <= number <= 999
-        number == 100 && return "cem" 
+        number == 100 && return "cem"
         unit, cent = digits( number, base = 100 )
         unit_text = pt_spell_1e3( unit; short_one, portugal = portugal )
         return pt_PT_centenas[ cent ] * " e "  * unit_text
@@ -108,13 +110,13 @@ function pt_spell_large_map( number, i; portugal::Bool = false )
 end
 
 function pt_spell_large( _number; portugal::Bool = false )
-    number = abs( _number ) 
+    number = abs( _number )
     list = digits( number, base = 1_000_000 )
     if portugal
-        res = pt_spell_large_map.( list, 1:length( list ), portugal = portugal ) .|> strip |> reverse |> z-> join( z," " ) 
+        res = pt_spell_large_map.( list, 1:length( list ), portugal = portugal ) .|> strip |> reverse |> z-> join( z," " )
         ( _number < 0 ) && ( res = "menos " * res )
-    else 
-        res = pt_spell_large_map.( list, 1:length( list ) ) .|> strip |> reverse |> z-> join( z," " ) 
+    else
+        res = pt_spell_large_map.( list, 1:length( list ) ) .|> strip |> reverse |> z-> join( z," " )
         ( _number < 0 ) && ( res = "menos " * res )
     end
     return res
@@ -139,7 +141,7 @@ function spelled_out_pt( number; portugal::Bool = false, dict::Symbol = :standar
         _int = Dec128( _int )
         if ( _int == 0 ) & !partitive
             intres = "zero"
-            
+
         elseif ( _int == 0 ) & partitive
             intres = ""
         elseif dict in ( :standard, :large, :modern )
@@ -149,10 +151,8 @@ function spelled_out_pt( number; portugal::Bool = false, dict::Symbol = :standar
         else
             throw( error( "unrecognized dict value: $dict" ) )
         end
-            
+
         decres = pt_spell_decimal( abs( _dec ); portugal = portugal )
         return intres * decres
     end
 end
-
-
