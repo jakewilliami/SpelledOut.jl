@@ -1,7 +1,7 @@
 module SpelledOut
 
 using DecFP: Dec64, Dec128
-using Formatting: format
+using Format: format
 
 export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 
@@ -64,9 +64,9 @@ function spelled_out(
     elseif lang ∈ (:pt,)
         return spelled_out_pt(number; portugal = true, dict = dict)
     end
-    
+
     throw(error("We do not support $lang yet.  Please make an issue and someone might be able to help you, or feel free to contribute."))
-    
+
     return nothing
 end
 
