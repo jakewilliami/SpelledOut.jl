@@ -1,7 +1,7 @@
 name = "SpelledOut"
 uuid = "4728c690-e668-4265-bc0d-51a8c0f93067"
 authors = ["Jake W. Ireland <jakewilliami@icloud.com> and contributors"]
-version = "1.2.0"
+version = "1.2.1"
 
 [deps]
 DecFP = "55939f99-70c6-5e9b-8bb0-5071ed7d61fd"
