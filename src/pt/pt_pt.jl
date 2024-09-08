@@ -42,7 +42,7 @@ const pt_PT_centenas = [
     "setecentos"
     "oitocentos"
     "novecentos"
-] 
+]
 
 const pt_PT_multiplos_1e6_singular = [
     "milhão"
@@ -51,9 +51,9 @@ const pt_PT_multiplos_1e6_singular = [
     "quatrilião"
     "quintilião"
     "sextilião"
-    "septilião" 
+    "septilião"
     "oitolião"
-    "nonilião" 
+    "nonilião"
     "decilião"
     "undecilião"
     "duodecilião"

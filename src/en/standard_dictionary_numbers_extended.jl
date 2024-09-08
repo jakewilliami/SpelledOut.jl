@@ -1,14 +1,14 @@
 const _small_numbers = String[
     "zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
-    
+
 const _small_number_dictionary = Dict{Char, String}(
     '0' => "zero", '1' => "one", '2' => "two", '3' => "three", '4' => "four", '5' => "five", '6' => "six",
     '7' => "seven", '8' => "eight", '9' => "nine")
-    
+
 const _tens = String[
     "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
-    
+
 # The scale_numbers are US, Canada and modern British (short scale)
 const _scale_modern = String[
     "thousand",             "million",              "billion",                "trillion",               "quadrillion",
@@ -21,7 +21,7 @@ const _scale_modern = String[
     "quintrigintillion",    "sestrigintillion",     "septentrigintillion",    "octotrigintillion",      "noventrigintillion",
     "quadragintillion"
     ]
-    
+
 const _scale_traditional_british = String[
     "thousand",              "million",               "thousand million",          "billion",                   "thousand billion",
     "trillion",              "thousand trillion",     "quadrillion",               "thousand quadrillion",      "quintillion",
@@ -32,7 +32,7 @@ const _scale_traditional_british = String[
     "octodecillion",         "thousand octodecillion","novendecillion",            "thousand novendecillion",   "vigintillion",
     "thousand vigintillion"
     ]
-    
+
 const _scale_traditional_european = String[
     "thousand",              "million",               "milliard",          "billion",              "billiard",
     "trillion",              "trilliard",             "quadrillion",       "quadrilliard",         "quintillion",
@@ -44,6 +44,6 @@ const _scale_traditional_european = String[
     "octodecillion",         "octodecilliard",        "novendecillion",    "novendecilliard",      "vigintillion",
     "vigintilliard"
     ]
-    
+
 const limit = BigInt(big(10)^120)
 const limit_str = "10^120"
