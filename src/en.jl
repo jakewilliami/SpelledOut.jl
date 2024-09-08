@@ -141,8 +141,8 @@ function spell_ordinal_en(number::Integer; british::Bool = false, dict::Symbol =
     _spelled_out_en!(word_buf, number, british = british, dict = dict)
     s = String(take!(word_buf))
 
-	lastword = lastsplit(isspace, s)
-	redolast = lastsplit('-', lastword)
+    lastword = lastsplit(isspace, s)
+    redolast = lastsplit('-', lastword)
 
     if redolast != lastword
         _lastsplit = '-'
@@ -218,15 +218,15 @@ function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :
 end
 
 function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = :modern)
-	_num, _den = number.num, number.den
+    _num, _den = number.num, number.den
 
     # return the number itself if the denomimator is one
-	isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
+    isone(_den) && return spelled_out_en(_num, british = british, dict = dict)
 
-	word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
+    word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
 
     # account for pluralisation
-	return isone(_num) ? word : word * "s"
+    return isone(_num) ? word : word * "s"
 end
 
 function spelled_out_en(number::AbstractIrrational; british::Bool = false, dict::Symbol = :modern)

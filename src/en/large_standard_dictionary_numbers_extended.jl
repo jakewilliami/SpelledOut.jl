@@ -30,6 +30,6 @@ const _large_scale_traditional_european = String[
     "sesquinquagintillion",     "sexagintilliard",                  "unsexagintillion",     "quinsexagintilliard",
     "septuagintilliard",        "quinseptuagintilliard",            "octogintilliard",      "quinoctogintilliard",
     "nonagintilliard",          "quinnonagintilliard",              "centilliard",          "quinquagintacentilliard",
-    "ducentilliard",            "quinquagintaducentilliard",        "trecentilliard",       "quinquagintatrecentilliard", 
+    "ducentilliard",            "quinquagintaducentilliard",        "trecentilliard",       "quinquagintatrecentilliard",
     "quadringentilliard",       "quinquagintaquadringentilliard",   "quingentilliard"
 ]
