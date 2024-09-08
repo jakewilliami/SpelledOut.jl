@@ -1,4 +1,4 @@
-# Gabriel de Freitas Pereira (May–June, 2022)
+# Gabriel de Freitas Pereira (@Gabrielforest; May–June, 2022)
 
 include(joinpath(@__DIR__, "pt", "standard_pt_br.jl"))
 include(joinpath(@__DIR__, "pt", "pt_pt.jl"))

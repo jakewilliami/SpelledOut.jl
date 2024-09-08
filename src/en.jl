@@ -1,5 +1,4 @@
-# Jake Ireland (October–November, 2020)
-# https://github.com/jakewilliami/SpelledOut.jl/commit/f0248d944de20804aae9f3eeb6a6ff1c1853ac99#diff-4933f64df61b24196bb1770cdc1ef08c680da0f45b3486d633a2ad180ffb417f
+# Jake Ireland (@jakewilliami; October–November, 2020)
 
 # dictionaries
 include(joinpath(@__DIR__, "en", "standard_dictionary_numbers_extended.jl"))

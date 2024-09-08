@@ -1,4 +1,4 @@
-# Jake Ireland (June, 2022–)
+# Jake Ireland (@jakewilliami; June, 2022–)
 
 include(joinpath(@__DIR__, "mi", "standard_dictionary_numbers_mi.jl"))
 

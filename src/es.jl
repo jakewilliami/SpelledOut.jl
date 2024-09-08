@@ -1,4 +1,4 @@
-# Andrés Riedemann (January, 2021)
+# Andrés Riedemann (@longemen3000; January, 2021)
 
 include(joinpath(@__DIR__, "es", "standard_es.jl"))
 
