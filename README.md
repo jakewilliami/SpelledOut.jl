@@ -10,7 +10,7 @@
 
 
 ## Description
-This is a minimal package for a pure Julia implementation of converting numbers in their Arabic form to numbers in their Anglo-Saxan form.  The process of **spelling out** a number has also been referred to as **set full out**, and to write out in **long hand**.  Some people to whom I look up have suggested calling this **verbal depresentatoin**, to **digitate**, and &mdash;one of my favourites&mdash; to **transnumerate**.
+This is a minimal package for a pure Julia implementation of converting numbers in their Arabic form to numbers in their natural language form.  The process of **spelling out** a number has also been referred to as **set full out**, and to write out in **long hand**.  Some people to whom I look up have suggested calling this **verbal depresentation**, to **digitate**, and&mdash;one of my favourites&mdash;to **transnumerate**.
 
 ## Quick Start
 ```julia
@@ -39,4 +39,3 @@ When implementing the main function for your language (typically called `spelled
 You can also add a fallback method and throw an error, but this should be caught by a `MethodError` anyway.  Now you can add to the main [`SpelledOut.jl`](src/SpelledOut.jl) function, in which you can add a branch for your language (following the trend).
 
 Finally, ensure you update the documentation for [Supported Languages](https://jakewilliami.github.io/SpelledOut.jl/dev/supported_languages/#Supported-Languages).
-
