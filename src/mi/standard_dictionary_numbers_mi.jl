@@ -3,7 +3,7 @@ const _mi_ma = "mā"
 
 # "kao" = no
 # short for "kaore" = no
-# Can be used to refer to nothing
+# Can be used to refer to nothing (kore)
 # kotahi is used in context, so like "one of x" (whereas tahi is
 # literally the number one)
 # in counting context, kotahi, e rua, e toru, etc. up to e iwa.

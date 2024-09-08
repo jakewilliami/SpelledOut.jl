@@ -3,9 +3,12 @@
 include(joinpath(@__DIR__, "mi", "standard_dictionary_numbers_mi.jl"))
 
 # TODO: kotahi vs tahi (https://animations.tewhanake.maori.nz/te-kakano/te-wahanga-tuatahi/30)
+# TODO: KOTAHI WITH MACRON?
 # TODO: Ordinal numbers (https://omniglot.com/language/numbers/maori.htm)
 # TODO: negatives
 # TODO: kotahi or kotahi rau?
+# TODO: implement missing/nothing??
+# TODO: implement float etc?
 
 _fn_bounds_err_msg(n::I, bounds::String, fname::Symbol) where {I <: Integer} =
     "The internal function \"$fname\" should only be used for numbers $bounds; number provided: $n"
