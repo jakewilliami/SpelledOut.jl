@@ -11,3 +11,7 @@
 
 ## Description
 This is a minimal package for a pure Julia implementation of converting numbers in their Arabic form to numbers in their Anglo-Saxan form.  The process of **spelling out** a number has also been referred to as **set full out**, to write out in **long hand**, and &mdash; as a great mind once suggested &mdash; to **transnumerate**.
+
+## Citation
+
+If your research depends on SpelledOut.jl, please consider giving us a formal citation: [`citation.bib`](./citation.bib).
