@@ -42,4 +42,4 @@ Finally, ensure you update the documentation for [Supported Languages](https://j
 
 ## Citation
 
-If your research depends on SpelledOut.jl, please consider giving us a formal citation: [`citation.bib`](./citation.bib).
+If your research depends on SpelledOut.jl, please consider giving us a formal citation: [`citation.bib`](./citation.bib).  Contributors who implement new language functionality in SpelledOut.jl are given authorship.
