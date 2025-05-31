@@ -25,12 +25,12 @@ jobs:
         arch:
           - x64
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: actions/cache@latest
+      - uses: actions/cache@v4
         env:
           cache-name: cache-artifacts
         with:
@@ -50,11 +50,11 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: '1'
-      - uses: extractions/setup-just@latest  # or taiki-e/install-action@just
+      - uses: extractions/setup-just@v3  # or taiki-e/install-action@just
       - run: |
           git config --global user.name name
           git config --global user.email email
@@ -68,13 +68,13 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@latest
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
-      - uses: extractions/setup-just@latest  # or taiki-e/install-action@just
+      - uses: extractions/setup-just@v3  # or taiki-e/install-action@just
 
       # Adapted from:
       #   github.com/FluxML/Flux.jl/blob/7be1ca7a/.github/workflows/JuliaFormatter.yml
-      - uses: dorny/paths-filter@latest
+      - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
