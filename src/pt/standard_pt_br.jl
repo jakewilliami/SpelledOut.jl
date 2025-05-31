@@ -1,4 +1,4 @@
-const pt_BR_1_a_19 =[
+const pt_BR_1_a_19 = [
     "um"
     "dois"
     "três"
@@ -44,9 +44,7 @@ const pt_BR_centenas = [
     "novecentos"
 ]
 
-const centenas_dicionario = Number[
-    200, 300, 400, 500, 600, 700, 800, 900
-]
+const centenas_dicionario = Number[200, 300, 400, 500, 600, 700, 800, 900]
 
 const pt_BR_multiplos_1e6_singular = [
     "milhão"

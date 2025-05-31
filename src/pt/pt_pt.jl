@@ -1,4 +1,4 @@
-const pt_PT_1_a_19 =[
+const pt_PT_1_a_19 = [
     "um"
     "dois"
     "três"

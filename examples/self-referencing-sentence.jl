@@ -41,7 +41,6 @@
 #   - Autograms: https://en.wikipedia.org/wiki/Autogram
 #   - Gary Doran's 'Seppy': https://github.com/garydoranjr/seppy
 
-
 ### Imports
 
 include(joinpath(dirname(@__DIR__), "src", "SpelledOut.jl"))
@@ -50,7 +49,6 @@ using .SpelledOut
 using Base: nothing_sentinel, current_logger
 
 using StatsBase
-
 
 ### Constants
 
@@ -61,25 +59,19 @@ const ENDING_STR = ", and last but not least, exactly one !"
 const MIDDLE_STR, MIDDLE_STR_OXFORD = ", ", ", and "
 const PLURAL_STR = "s"
 
-
 ### Helper functions
-
 
 # Given a count map (i.e., Dict('a' => 3, 'b' => 1, ...)), construct the autogram ("This
 # sentence contains n 'a's. n 'b's, ...")
 function construct_pangram(
-    io::IO,
-    cm::Dict{Char, Int},
-    alphabet = ALPHABET,
-    lang = :en,
-    use_alt_connector::Bool = false,
+    io::IO, cm::Dict{Char,Int}, alphabet=ALPHABET, lang=:en, use_alt_connector::Bool=false
 )
     alphabet_len = length(alphabet)
     print(io, STARTING_STR)
 
     for (i, c) in enumerate(alphabet)
         n = get(cm, c, 0)
-        print(io, spelled_out(n, lang = lang), " '", c)
+        print(io, spelled_out(n; lang=lang), " '", c)
 
         # Optionally pluralise the word
         n == 1 ? print(io, '\'') : print(io, '\'', PLURAL_STR)
@@ -95,12 +87,11 @@ function construct_pangram(
     return Char.(take!(io))
 end
 
-
 ### Main
 
 function construct_autogram()
     io = IOBuffer()
-    prev_cm = Dict{Char, Int}()
+    prev_cm = Dict{Char,Int}()
     i = 0
 
     while true
@@ -124,15 +115,13 @@ function construct_autogram()
         diffs!(prev_cm, curr_cm)
     end
 
-    error("unreachable")
+    return error("unreachable")
 end
-
 
 function main()
     sentence, i = construct_autogram()
     println("Found the following sentence in $i iterations:")
-    println("    ", sentence)
+    return println("    ", sentence)
 end
-
 
 main()

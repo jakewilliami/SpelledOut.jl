@@ -1,17 +1,18 @@
-function lastsplit(predicate, s::S) where {S <: AbstractString}
+function lastsplit(predicate, s::S) where {S<:AbstractString}
     i = findlast(predicate, s)
     return isnothing(i) ? SubString(s) : SubString(s, nextind(s, i))
 end
 
-function firstlastsplit(predicate, s::S) where {S <: AbstractString}
+function firstlastsplit(predicate, s::S) where {S<:AbstractString}
     i = findlast(predicate, s)
     return isnothing(i) ? SubString(s) : SubString(s, 1, prevind(s, i))
 end
 
-Base.findall(c::Char, s::S) where {S <: AbstractString} =
-    Int[only(i) for i in findall(string(c), s)]
+function Base.findall(c::Char, s::S) where {S<:AbstractString}
+    return Int[only(i) for i in findall(string(c), s)]
+end
 
-function ithsplit(predicate, s::S, i::Int) where {S <: AbstractString}
+function ithsplit(predicate, s::S, i::Int) where {S<:AbstractString}
     j = 1 # firstindex(s)
     for _ in 1:i
         k = findnext(predicate, s, j)

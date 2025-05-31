@@ -1,4 +1,4 @@
-const es_1_a_29 =[
+const es_1_a_29 = [
     "un"
     "dos"
     "tres"
@@ -41,7 +41,6 @@ const es_decenas = [
     "ochenta"
     "noventa"
 ]
-
 
 const es_centenas = [
     "ciento"
