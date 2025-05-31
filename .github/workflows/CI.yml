@@ -54,7 +54,7 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: '1'
-      - extractions/setup-just@latest  # or taiki-e/install-action@just
+      - uses: extractions/setup-just@latest  # or taiki-e/install-action@just
       - run: |
           git config --global user.name name
           git config --global user.email email
