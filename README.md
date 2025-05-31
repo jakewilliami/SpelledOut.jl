@@ -38,6 +38,11 @@ When implementing the main function for your language (typically called `spelled
 
 You can also add a fallback method and throw an error, but this should be caught by a `MethodError` anyway.  Now you can add to the main [`SpelledOut.jl`](src/SpelledOut.jl) function, in which you can add a branch for your language (following the trend).
 
+Running tests has been made more convenient by using [`just`](https://github.com/casey/just):
+```commandline
+$ just test
+```
+
 Finally, ensure you update the documentation for [Supported Languages](https://jakewilliami.github.io/SpelledOut.jl/dev/supported_languages/#Supported-Languages).
 
 ## Citation
