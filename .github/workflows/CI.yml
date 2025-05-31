@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 2 * * *'  # Daily at 2 AM UTC (8 PM CST)
   push:
-    branches: [master]
+    branches: ["**"]
     tags: ["*"]
   pull_request:
 jobs:
@@ -15,8 +15,9 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - "1.5"   # current
-          - "nightly"   # Latest Release
+          - "1.0"       # Old version
+          - "1.6"       # Recent LTS version
+          - "nightly"   # Latest release
         os:
           - ubuntu-latest
           - macOS-latest
@@ -24,12 +25,12 @@ jobs:
         arch:
           - x64
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         env:
           cache-name: cache-artifacts
         with:
@@ -49,19 +50,41 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
         with:
           version: '1'
+      - uses: extractions/setup-just@v3  # or taiki-e/install-action@just
       - run: |
           git config --global user.name name
           git config --global user.email email
           git config --global github.user username
       - run: |
-          julia --project=docs -e '
-            using Pkg;
-            Pkg.develop(PackageSpec(path=pwd()));
-            Pkg.instantiate();'
-      - run: julia --project=docs docs/make.jl
+          just docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@latest
+      - uses: extractions/setup-just@v3  # or taiki-e/install-action@just
+
+      # Adapted from:
+      #   github.com/FluxML/Flux.jl/blob/7be1ca7a/.github/workflows/JuliaFormatter.yml
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            julia_file_change:
+              - added|modified: '**/*.jl'
+      - name: Apply JuliaFormatter
+        run: |
+          just fmt
+      - name: Check formatting diff
+        if: steps.filter.outputs.julia_file_change == 'true'
+        run: |
+          git diff --color=always --exit-code
+

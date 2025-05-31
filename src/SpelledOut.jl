@@ -8,6 +8,7 @@ export spelled_out, Spelled_out, Spelled_Out, SPELLED_OUT
 include("en.jl")
 include("es.jl")
 include("pt.jl")
+include("mi.jl")
 
 """
 ```julia
@@ -49,23 +50,26 @@ julia> spelled_out(19, lang = :pt)
 """
 function spelled_out(
     number::Number;
-    lang::Symbol = Symbol(ENV["LANG"][1:(findfirst(==('.'), ENV["LANG"]) - 1)]), # Symbol(first(split(ENV["LANG"], '.')))
-    dict::Symbol = :modern
+    lang::Symbol=Symbol(ENV["LANG"][1:(findfirst(==('.'), ENV["LANG"]) - 1)]), # Symbol(first(split(ENV["LANG"], '.')))
+    dict::Symbol=:modern,
 )
-
-    if lang ∈ (:en, :en_US)
-        return spelled_out_en(number, british = false, dict = dict)
-    elseif lang ∈ (:en_UK, :en_GB, :en_NZ, :en_AU)
-        return spelled_out_en(number, british = true, dict = dict)
+    if lang ∈ (:en, :en_US, :en_UK, :en_GB, :en_NZ, :en_AU)
+        return spelled_out_en(
+            number; british=lang ∈ (:en_UK, :en_GB, :en_NZ, :en_AU), dict=dict
+        )
     elseif lang ∈ (:es,)
-        return spelled_out_es(number; dict = dict)
-    elseif lang ∈ (:pt_BR,)
-        return spelled_out_pt(number; portugal = false, dict = dict)
-    elseif lang ∈ (:pt,)
-        return spelled_out_pt(number; portugal = true, dict = dict)
+        return spelled_out_es(number; dict=dict)
+    elseif lang ∈ (:pt, :pt_BR)
+        return spelled_out_pt(number; portugal=lang == :pt, dict=dict)
+    elseif lang ∈ (:mi,)
+        return spelled_out_mi(number)
     end
 
-    throw(error("We do not support $lang yet.  Please make an issue and someone might be able to help you, or feel free to contribute."))
+    throw(
+        error(
+            "We do not support $lang yet.  Please make an issue and someone might be able to help you, or feel free to contribute.",
+        ),
+    )
 
     return nothing
 end

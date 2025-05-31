@@ -1,4 +1,4 @@
-_ones_feminine = Dict{Int, NTuple{1, String}}(
+_ones_feminine = Dict{Int,NTuple{1,String}}(
     1 => ("одна",),
     2 => ("две",),
     3 => ("три",),
@@ -10,7 +10,7 @@ _ones_feminine = Dict{Int, NTuple{1, String}}(
     9 => ("девять",),
 )
 
-_ones = Dict{Int, NTuple{1, String}}(
+_ones = Dict{Int,NTuple{1,String}}(
     1 => ("один",),
     2 => ("два",),
     3 => ("три",),
@@ -22,7 +22,7 @@ _ones = Dict{Int, NTuple{1, String}}(
     9 => ("девять",),
 )
 
-_tens = Dict{Int, NTuple{1, String}}(
+_tens = Dict{Int,NTuple{1,String}}(
     0 => ("десять",),
     1 => ("одиннадцать",),
     2 => ("двенадцать",),
@@ -35,7 +35,7 @@ _tens = Dict{Int, NTuple{1, String}}(
     9 => ("девятнадцать",),
 )
 
-_twenties = Dict{Int, NTuple{1, String}}(
+_twenties = Dict{Int,NTuple{1,String}}(
     2 => ("двадцать",),
     3 => ("тридцать",),
     4 => ("сорок",),
@@ -46,7 +46,7 @@ _twenties = Dict{Int, NTuple{1, String}}(
     9 => ("девяносто",),
 )
 
-_hundreds = Dict{Int, NTuple{1, String}}(
+_hundreds = Dict{Int,NTuple{1,String}}(
     1 => ("сто",),
     2 => ("двести",),
     3 => ("триста",),
@@ -58,7 +58,7 @@ _hundreds = Dict{Int, NTuple{1, String}}(
     9 => ("девятьсот",),
 )
 
-_thousands = Dict{Int, NTuple{3, String}}(
+_thousands = Dict{Int,NTuple{3,String}}(
     1 => ("тысяча", "тысячи", "тысяч"), # 10^3
     2 => ("миллион", "миллиона", "миллионов"), # 10^6
     3 => ("миллиард", "миллиарда", "миллиардов"), # 10^9
