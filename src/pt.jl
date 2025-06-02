@@ -120,7 +120,7 @@ function pt_spell_large( _number; portugal::Bool = false )
     return res
 end
 
-function spelled_out_pt( number; portugal::Bool = false, dict::Symbol = :standard )
+function spelled_out_pt( number::Union{Integer, Float64}; portugal::Bool = false, dict::Symbol = :standard )
     if iszero( number )
         return "zero"
     end
@@ -156,3 +156,7 @@ function spelled_out_pt( number; portugal::Bool = false, dict::Symbol = :standar
 end
 
 
+# Fallback method if we do not know how to handle the input
+function spelled_out_pt(number; portugal::Bool = false, dict::Symbol = :standard)
+    throw(error("Cannot parse type $(typeof(number)).  Please make an issue."))
+end
