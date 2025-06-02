@@ -84,7 +84,13 @@ function _spelled_out_en!(io::IOBuffer, number_norm::Integer; british::Bool = fa
     end
     
     if number_norm < 0
+        # In "Merriam-Webster's Guide to Everyday Math: A Home and Business Reference"
+        # by Brian Burrell (1998), the adjective "negative" over "minus" is used for
+        # negative numbers.
+        #
+        # See #40: SpelledOut.jl/issues/40
         print(io, "negative ")
+        number_norm = abs(number_norm)
     end
 	
     if number_norm > limit - 1
@@ -223,7 +229,7 @@ function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = 
 	word = spelled_out_en(_num, british = british, dict = dict) * " " * spell_ordinal_en(_den, british = british, dict = dict)
     
     # account for pluralisation
-	return isone(_num) ? word : word * "s"
+    return isone(abs(_num)) ? word : word * "s"
 end
 
 function spelled_out_en(number::AbstractIrrational; british::Bool = false, dict::Symbol = :modern)

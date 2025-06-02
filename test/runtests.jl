@@ -22,7 +22,9 @@ using SpelledOut
     @test spelled_out(2^log2(3390000), lang = :en) == "three million, three hundred ninety thousand" # should convert 3.3899999999999986e6 to an integer
     @test spelled_out(1000000.01, lang = :en) == "one million point zero one" # parse big floats correctly (i.e., avoid scientific notation.  Caveat: this is slow)
     @test spelled_out(1//3, lang = :en_UK) == "one third"
+    @test spelled_out(2//3, lang = :en_UK) == "two thirds"
     @test spelled_out(1//5, lang = :en_UK) == "one fifth"
+    @test spelled_out(2//5, lang = :en_UK) == "two fifths"
     @test spelled_out(1//102, lang = :en_UK) == "one one hundred and second"
     @test spelled_out(1//102, lang = :en_US) == "one one hundred second"
     @test spelled_out(5//102, lang = :en_UK) == "five one hundred and seconds"
@@ -31,6 +33,18 @@ using SpelledOut
     @test spelled_out(40//1, lang = :en_UK) == "forty"
     @test spelled_out(40//2, lang = :en_UK) == "twenty"
     @test spelled_out(40//6, lang = :en_UK) == "twenty thirds"
+
+    @test spelled_out(-1; lang=:en_UK) == "negative one"
+    @test spelled_out(-19; lang=:en_UK) == "negative nineteen"
+    @test spelled_out(-198; lang=:en_UK) == "negative one hundred and ninety-eight"
+    @test spelled_out(-1982; lang=:en_UK) == "negative one thousand, nine hundred and eighty-two"
+    @test spelled_out(-3.0; lang=:en_UK) == "negative three"
+    @test spelled_out(-1//3; lang=:en_UK) == "negative one third"
+    @test spelled_out(-(1//3); lang=:en_UK) == "negative one third"
+    @test spelled_out(-3//1; lang=:en_UK) == "negative three"
+    @test spelled_out(-(3//1); lang=:en_UK) == "negative three"
+    @test spelled_out(3//-1; lang=:en_UK) == "negative three"
+    @test spelled_out(Complex(-2, -3); lang=:en_UK) == "negative two and negative three imaginaries"
 end
 
 @testset "Spanish" begin
