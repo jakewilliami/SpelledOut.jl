@@ -92,7 +92,7 @@ function es_spell_large(_number)
 end
 
 
-function spelled_out_es(number; dict=:standard)
+function spelled_out_es(number::Union{Integer, Float64}; dict=:standard)
     if iszero(number)
         return "cero"
     end
@@ -135,3 +135,7 @@ end
 
 
 
+# Fallback method if we do not know how to handle the input
+function spelled_out_es(number, dict = :standard)
+    throw(error("Cannot parse type $(typeof(number)).  Please make an issue."))
+end
