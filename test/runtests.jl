@@ -44,7 +44,26 @@ using SpelledOut
     @test spelled_out(-3//1; lang=:en_UK) == "negative three"
     @test spelled_out(-(3//1); lang=:en_UK) == "negative three"
     @test spelled_out(3//-1; lang=:en_UK) == "negative three"
-    @test spelled_out(Complex(-2, -3); lang=:en_UK) == "negative two and negative three imaginaries"
+
+    @test spelled_out(Complex(2, 3); lang=:en_UK) == "two plus three i"
+    @test spelled_out(Complex(-2, 3); lang=:en_UK) == "negative two plus three i"
+    @test spelled_out(Complex(2, -3); lang=:en_UK) == "two minus three i"
+    @test spelled_out(Complex(-2, -3); lang=:en_UK) == "negative two minus three i"
+
+    @test spelled_out(Complex(0, 3); lang=:en_UK) == "three i"
+    @test spelled_out(Complex(0, -3); lang=:en_UK) == "negative three i"
+    @test spelled_out(Complex(0, 1); lang=:en_UK) == "i"
+    @test spelled_out(Complex(0, -1); lang=:en_UK) == "negative i"
+
+    @test spelled_out(Complex(2, 0); lang=:en_UK) == "two"
+    @test spelled_out(Complex(-2, 0); lang=:en_UK) == "negative two"
+
+    @test spelled_out(Complex(0, 0); lang=:en_UK) == "zero"
+
+    @test spelled_out(Complex(2, 1); lang=:en_UK) == "two plus i"
+    @test spelled_out(Complex(2, -1); lang=:en_UK) == "two minus i"
+    @test spelled_out(Complex(-2, 1); lang=:en_UK) == "negative two plus i"
+    @test spelled_out(Complex(-2, -1); lang=:en_UK) == "negative two minus i"
 end
 
 @testset "Spanish" begin
