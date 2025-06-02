@@ -195,8 +195,8 @@ function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symb
         _length_of_presicion = length(string(_decimal)) - 2 # (ndigits(_whole) + 1)
         number = format(number, precision = _length_of_presicion)
     else
-        # It is an integer is scientific notation, treat normally without decimal precision considerations
-        # E.g., 1e10 should be parsed as an integer (as should 1.0e10)
+        # It is an integer is scientific notation, treat normally without decimal precision
+        # considerations.  E.g., 1e10 should be parsed as an integer (as should 1.0e10).
         number = parse(BigInt, str_number)
     end
     
@@ -215,9 +215,73 @@ function spelled_out_en(number::AbstractFloat; british::Bool = false, dict::Symb
     return nothing
 end
 
+function _spelled_out_with_unit_en(io::IOBuffer, number::Integer, unit::String; british::Bool = false, dict::Symbol = :modern)
+    if isone(abs(number))
+        # Special case for handling a single unit.
+        #
+        # We say "x," not "one x"
+        number < 0 && print(io, "negative ")
+        print(io, unit)
+    else
+        _spelled_out_en!(io, number, british = british, dict = dict)
+        print(io, ' ', unit)
+    end
+
+    return io
+end
+
 # Spell out complex numbers
 function spelled_out_en(number::Complex; british::Bool = false, dict::Symbol = :modern)
-    return spelled_out_en(real(number), british = british, dict = dict) * " and " * spelled_out_en(imag(number), british = british, dict = dict) * " imaginaries"
+    # Trivial case: both parts are zero, so the number is zero
+    iszero(number) && return spelled_out_en(0, british = british, dict = dict)
+
+    # Complex numbers are normally given in their standard form, a + bi; real part a is
+    # first, followed by the imaginary part second, so we will print them as such.
+    re, i = real(number), imag(number)
+    io = IOBuffer()
+
+    # Special case for handling a single imaginary unit.
+    if iszero(re) && isone(abs(i))
+        _spelled_out_with_unit_en(io, i, "i", british = british, dict = dict)
+        return String(take!(io))
+    end
+
+    # We only report on the non-zero parts
+    if !iszero(re)
+        _spelled_out_en!(io, re, british = british, dict = dict)
+    end
+
+    if !iszero(i)
+        # Handle negative imaginary component; if it is negative, we don't say
+        # "plus negative x" (even though this is mathematically accurate because
+        # addition is commutitive).  Rather, we say "minus x."
+        #
+        # Note that we only have special handling for the delimiting word and
+        # negative imaginary part if there is a non-zero real part.  Otherwise,
+        # we can just print the number normally, followed by the imaginary unit i.
+        if !iszero(re)
+            if i < 0
+                print(io, " minus ")
+                i = abs(i)
+            else
+                print(io, " plus ")
+            end
+        end
+
+        # Use unit printing for the imaginary part, as the imaginary unit can be treated
+        # as a unit, like in measurement.
+        #
+        # Print the imaginary unit, denoted by i (often in italic).  Even when spelled
+        # out, we say "i", rather than "x imaginaries" or "x parts imaginary."
+        #
+        # The imaginary unit i is pronounced like the letter "I" (/aɪ/).
+        #
+        # Note that in some contexts, especially electrical engineering, the symbol j
+        # is used instead of i.
+        _spelled_out_with_unit_en(io, i, "i", british = british, dict = dict)
+    end
+
+    return String(take!(io))
 end
 
 function spelled_out_en(number::Rational; british::Bool = false, dict::Symbol = :modern)
